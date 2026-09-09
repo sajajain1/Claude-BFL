@@ -19,6 +19,18 @@ Power Platform, Purview), dashboard wireframes, data model, AI governance and
 human-in-the-loop controls, KPI/KRI catalogue, benefits/ROI shape, the AI
 Compliance Center of Excellence, and the implementation roadmap.
 
+`assessment-qa-checker.html` — a working prototype of the QA engine's
+deterministic first pass, published as an interactive artifact:
+https://claude.ai/code/artifact/728123cd-bdcb-4588-bbef-070f122b1972
+Upload a completed assessment workbook (.xlsx/.xls/.csv); it auto-maps columns,
+runs the rules subset of the QA-01…QA-18 catalogue (blank mandatory fields,
+unjustified N/A, thin/boilerplate justifications, copy-paste, missing/expired
+evidence, date hygiene), computes the AQS with the documented deduction caps,
+bands and blocking rules, and offers an optional AI deep review (five-criterion
+justification rubric + contradiction detection) and CSV export of observations.
+It assists review only — it makes no dispositions, and AI-flagged items are
+suggestions until a reviewer confirms them.
+
 `outsourcing-qa-framework.html` — the narrative blueprint, covering:
 
 | Section | Brief item |

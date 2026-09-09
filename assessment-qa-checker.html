@@ -1,0 +1,658 @@
+<title>Assessment QA Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap">
+<style>
+:root{
+  --paper:#F1F3EE; --surface:#FBFCFA; --surface-2:#E7EAE2;
+  --ink:#141A1E; --ink-2:#59645F; --ink-3:#7C867F;
+  --rule:#D3D8CE; --rule-strong:#B9C0B4;
+  --accent:#1F5D6B; --accent-ink:#164852; --accent-soft:#DEEAEB;
+  --sev-block:#8E2A2A; --sev-high:#B5642A; --sev-med:#B08D22; --sev-low:#5E8048; --sev-info:#3F6B52;
+  --sev-block-soft:#F3E2E2; --sev-high-soft:#F2E6DA; --sev-med-soft:#F1ECD8; --sev-low-soft:#E5ECDE; --sev-info-soft:#DFE9E3;
+  --ok:#3F6B52;
+  --shadow:0 1px 2px rgba(20,26,30,.05), 0 8px 24px -16px rgba(20,26,30,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161A; --surface:#171D21; --surface-2:#212930;
+    --ink:#E7EBE4; --ink-2:#9BA69F; --ink-3:#7B857E;
+    --rule:#2C343A; --rule-strong:#3E484F;
+    --accent:#78B7C2; --accent-ink:#9BCDD6; --accent-soft:#1A3940;
+    --sev-block:#D4736B; --sev-high:#DE9A63; --sev-med:#D8BC64; --sev-low:#9CC07E; --sev-info:#7FBF9C;
+    --sev-block-soft:#3A2422; --sev-high-soft:#382B1F; --sev-med-soft:#35301C; --sev-low-soft:#26301F; --sev-info-soft:#1F2F27;
+    --ok:#7FBF9C;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11161A; --surface:#171D21; --surface-2:#212930;
+  --ink:#E7EBE4; --ink-2:#9BA69F; --ink-3:#7B857E;
+  --rule:#2C343A; --rule-strong:#3E484F;
+  --accent:#78B7C2; --accent-ink:#9BCDD6; --accent-soft:#1A3940;
+  --sev-block:#D4736B; --sev-high:#DE9A63; --sev-med:#D8BC64; --sev-low:#9CC07E; --sev-info:#7FBF9C;
+  --sev-block-soft:#3A2422; --sev-high-soft:#382B1F; --sev-med-soft:#35301C; --sev-low-soft:#26301F; --sev-info-soft:#1F2F27;
+  --ok:#7FBF9C;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  background:var(--paper); color:var(--ink); margin:0;
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:2px}
+.shell{max-width:1240px; margin:0 auto; padding:0 clamp(16px,3.5vw,36px) 56px}
+
+.masthead{border-bottom:1px solid var(--rule); padding:26px 0 20px; display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 18px}
+.masthead h1{font-family:Literata,Georgia,serif; font-weight:600; font-size:1.55rem; margin:0; letter-spacing:-.01em}
+.masthead .sub{color:var(--ink-2); font-size:.9rem}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--accent-ink)}
+
+.layout{display:grid; grid-template-columns:330px minmax(0,1fr); gap:26px; margin-top:26px}
+@media (max-width:900px){ .layout{grid-template-columns:1fr} }
+
+.panel{background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:16px 18px}
+.panel h2{font-size:.75rem; font-family:"IBM Plex Mono",monospace; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-2); margin:0 0 12px; font-weight:500}
+.rail{display:flex; flex-direction:column; gap:16px; align-self:start; position:sticky; top:16px}
+@media (max-width:900px){ .rail{position:static} }
+
+.drop{
+  border:1.5px dashed var(--rule-strong); border-radius:8px; padding:22px 16px; text-align:center;
+  color:var(--ink-2); cursor:pointer; transition:border-color .15s, background .15s; background:var(--paper);
+}
+.drop.over{border-color:var(--accent); background:var(--accent-soft)}
+.drop strong{color:var(--ink); font-weight:600; display:block; margin-bottom:3px}
+.drop .hint{font-size:.8rem; color:var(--ink-3)}
+
+.field{display:flex; flex-direction:column; gap:4px; margin-bottom:10px}
+.field label{font-size:.74rem; color:var(--ink-2); letter-spacing:.02em}
+select,button{font:inherit}
+select{
+  background:var(--paper); color:var(--ink); border:1px solid var(--rule); border-radius:6px;
+  padding:6px 8px; font-size:.85rem; width:100%;
+}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px; width:100%;
+  background:var(--accent); color:var(--surface); border:1px solid var(--accent);
+  border-radius:6px; padding:9px 12px; font-size:.88rem; font-weight:600; cursor:pointer;
+}
+.btn:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.55; cursor:default}
+.btn.ghost{background:transparent; color:var(--accent-ink); border-color:var(--rule-strong); font-weight:500}
+.btn.ghost:hover{background:var(--surface-2); filter:none}
+.btn+.btn{margin-top:8px}
+.status{font-size:.8rem; color:var(--ink-2); margin-top:8px; min-height:1.1em}
+
+.banner{
+  border:1px solid var(--rule); border-left:3px solid var(--accent); background:var(--surface);
+  border-radius:6px; padding:10px 14px; font-size:.86rem; color:var(--ink-2); margin-bottom:18px;
+}
+.banner strong{color:var(--ink)}
+
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px}
+.tile{background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:13px 15px; box-shadow:var(--shadow)}
+.tile .lbl{font-size:.68rem; font-family:"IBM Plex Mono",monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2)}
+.tile .val{font-family:"IBM Plex Mono",monospace; font-size:1.75rem; font-weight:600; line-height:1.15; margin-top:4px; font-variant-numeric:tabular-nums}
+.tile .note{font-size:.76rem; color:var(--ink-3); margin-top:2px}
+.chip{
+  display:inline-block; font-size:.7rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  border-radius:999px; padding:2px 9px; vertical-align:middle;
+}
+.chip.accept{background:var(--sev-low-soft); color:var(--sev-low)}
+.chip.advisory{background:var(--sev-info-soft); color:var(--sev-info)}
+.chip.rework{background:var(--sev-med-soft); color:var(--sev-med)}
+.chip.reject{background:var(--sev-block-soft); color:var(--sev-block)}
+.chip.ai{background:var(--accent-soft); color:var(--accent-ink); text-transform:none; letter-spacing:.02em}
+
+.blockbar{
+  border:1px solid var(--sev-block); background:var(--sev-block-soft); color:var(--ink);
+  border-radius:6px; padding:10px 14px; font-size:.87rem; margin-bottom:18px;
+}
+.blockbar strong{color:var(--sev-block)}
+.blockbar[hidden]{display:none!important}
+
+.dims{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:10px 22px; margin:2px 0 4px}
+.dim{font-size:.8rem}
+.dim .row{display:flex; justify-content:space-between; gap:8px; margin-bottom:3px}
+.dim .name{color:var(--ink-2)}
+.dim .num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink)}
+.bar{height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:3px}
+.dim.na .num,.dim.na .name{color:var(--ink-3)}
+.dim.na .bar i{background:var(--rule-strong)}
+
+.tablewrap{overflow-x:auto; border:1px solid var(--rule); border-radius:8px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:.84rem; min-width:640px}
+th{
+  text-align:left; font-family:"IBM Plex Mono",monospace; font-size:.66rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-2); font-weight:500; padding:9px 12px; border-bottom:1px solid var(--rule);
+  background:var(--paper); white-space:nowrap;
+}
+td{padding:9px 12px; border-bottom:1px solid var(--rule); vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.sev{white-space:nowrap}
+.sevtag{display:inline-block; font-size:.68rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; border-radius:4px; padding:1px 7px; border-left:3px solid transparent}
+.sev-Blocking{background:var(--sev-block-soft); color:var(--sev-block); border-left-color:var(--sev-block)}
+.sev-High{background:var(--sev-high-soft); color:var(--sev-high); border-left-color:var(--sev-high)}
+.sev-Medium{background:var(--sev-med-soft); color:var(--sev-med); border-left-color:var(--sev-med)}
+.sev-Low{background:var(--sev-low-soft); color:var(--sev-low); border-left-color:var(--sev-low)}
+.sev-Info{background:var(--sev-info-soft); color:var(--sev-info); border-left-color:var(--sev-info)}
+td .q{color:var(--ink-3); font-size:.78rem; display:block; margin-top:1px}
+td.ref,td.check{font-family:"IBM Plex Mono",monospace; font-size:.78rem; white-space:nowrap}
+td.action{color:var(--ink-2)}
+.empty{padding:28px 16px; text-align:center; color:var(--ink-2); font-size:.9rem}
+
+.assumps{font-size:.79rem; color:var(--ink-3); margin-top:14px}
+.assumps li{margin-bottom:2px}
+.foot{margin-top:28px; padding-top:14px; border-top:1px solid var(--rule); font-size:.78rem; color:var(--ink-3); line-height:1.6}
+h3.sect{font-size:.75rem; font-family:"IBM Plex Mono",monospace; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-2); margin:22px 0 10px; font-weight:500}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Vendor Assurance Control Tower</div>
+      <h1>Assessment QA Checker</h1>
+    </div>
+    <div class="sub">Upload a completed assessment workbook · deterministic checks first, AI review on request · nothing leaves your browser except the optional AI pass</div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail">
+      <section class="panel">
+        <h2>1 · Workbook</h2>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload assessment workbook">
+          <strong>Drop your .xlsx here</strong>
+          <span class="hint">or click to browse · one sheet = one assessment<br>.xlsx · .xls · .csv</span>
+        </div>
+        <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+        <div class="field" id="sheetField" hidden>
+          <label for="sheetSel">Sheet</label>
+          <select id="sheetSel"></select>
+        </div>
+        <div class="status" id="fileStatus"></div>
+        <button class="btn ghost" id="tplBtn" hidden>Download blank template (CSV)</button>
+      </section>
+
+      <section class="panel">
+        <h2>2 · Column mapping</h2>
+        <div id="mapFields"></div>
+        <button class="btn ghost" id="rerunBtn">Re-run checks</button>
+      </section>
+
+      <section class="panel">
+        <h2>3 · Deep review</h2>
+        <button class="btn" id="aiBtn" hidden>Run AI deep review</button>
+        <button class="btn ghost" id="aiStop" hidden>Stop</button>
+        <div class="status" id="aiStatus">AI review grades each justification against the five-criterion rubric and looks for contradictions between answers.</div>
+        <button class="btn ghost" id="csvBtn" hidden>Export observations (CSV)</button>
+      </section>
+    </aside>
+
+    <main>
+      <div class="banner" id="srcBanner"><strong>Example data.</strong> This is a built-in sample assessment (a mid-tier payment reconciliation vendor) so you can see what the checker produces. Upload your own workbook to replace it.</div>
+      <div class="blockbar" id="blockbar" hidden></div>
+
+      <div class="tiles">
+        <div class="tile">
+          <div class="lbl">AQS</div>
+          <div class="val" id="aqsVal">–</div>
+          <div class="note"><span class="chip" id="bandChip">–</span></div>
+        </div>
+        <div class="tile">
+          <div class="lbl">Observations</div>
+          <div class="val" id="obsVal">–</div>
+          <div class="note" id="obsNote">–</div>
+        </div>
+        <div class="tile">
+          <div class="lbl">Blocking rules</div>
+          <div class="val" id="blockVal">–</div>
+          <div class="note">override the score</div>
+        </div>
+        <div class="tile">
+          <div class="lbl">Confidence</div>
+          <div class="val" id="confVal">–</div>
+          <div class="note" id="confNote">column mapping × parse rate</div>
+        </div>
+        <div class="tile">
+          <div class="lbl">Routing</div>
+          <div class="val" id="routeVal" style="font-size:1.05rem; margin-top:10px">–</div>
+        </div>
+      </div>
+
+      <h3 class="sect">Deductions by dimension</h3>
+      <div class="dims panel" id="dims" style="padding:16px 18px"></div>
+
+      <h3 class="sect">Observations</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Severity</th><th>Check</th><th>Ref</th><th>Finding</th><th>Suggested action</th></tr></thead>
+          <tbody id="obsBody"><tr><td colspan="5" class="empty">No data yet.</td></tr></tbody>
+        </table>
+      </div>
+      <ul class="assumps" id="assumps"></ul>
+
+      <div class="foot">
+        Scoring: AQS = 100 − Σ deductions, capped per dimension (completeness 25 · evidence 20 · justification 20 · consistency 15 · policy 15 · hygiene 5); bands 85 Accept / 70 Advisory / 55 Rework / below Reject. Blocking defects route to human review regardless of score. Policy conformance needs the clause library and is not assessed by this standalone checker. Checks implement the QA-01…QA-18 catalogue from the solution design (deterministic subset; QA-04/05 via the AI pass). This tool assists review — it does not make dispositions, and AI-flagged items are suggestions until a reviewer confirms them.
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+"use strict";
+/* ---------- column roles ---------- */
+const ROLES = [
+  {key:"ref",   name:"Question ref",        syn:["question id","qid","ref","q ref","question ref","id","sr no","s no","sno","sr. no","q no","question no","no"]},
+  {key:"section",name:"Section (optional)", syn:["section","domain","category","area","control domain","control area"]},
+  {key:"question",name:"Question",          syn:["question","control question","assessment question","question text","query","requirement","control","control description"]},
+  {key:"mandatory",name:"Mandatory flag",   syn:["mandatory","required","mandatory y n","is mandatory","must answer","mandatory yn"]},
+  {key:"response",name:"Response",          syn:["response","answer","vendor response","reply","result","status","response y n na"]},
+  {key:"just",  name:"Justification",       syn:["justification","comments","comment","remarks","explanation","rationale","notes","vendor comments","details","supporting comments"]},
+  {key:"evref", name:"Evidence reference",  syn:["evidence","evidence reference","evidence ref","attachment","document","evidence provided","supporting document","proof","annexure","evidence file"]},
+  {key:"evexp", name:"Evidence valid until",syn:["evidence expiry","expiry","valid until","validity","expiry date","valid till","evidence valid until","certificate expiry","expiration","valid to"]},
+];
+const CORE_WEIGHTS = {response:.4, just:.2, mandatory:.15, evref:.15, evexp:.1};
+const CAPS = {completeness:25, evidence:20, justification:20, consistency:15, policy:15, hygiene:5};
+const DIM_NAMES = {completeness:"Completeness", evidence:"Evidence integrity", justification:"Justification quality", consistency:"Internal consistency", policy:"Policy conformance", hygiene:"Data hygiene"};
+const GENERIC = ["adequate controls in place","controls are in place","we are compliant","fully compliant","no issues","as per policy","will be provided","will be shared","refer attached","refer attachment","noted","in progress","under process","being implemented"];
+const SEV_ORDER = {Blocking:0, High:1, Medium:2, Low:3, Info:4};
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+
+/* ---------- built-in sample (clearly labelled example data) ---------- */
+const SAMPLE = {
+  headers:["Ref","Section","Question","Mandatory","Response","Justification","Evidence Reference","Evidence Valid Until"],
+  rows:[
+    ["Q01","Governance","Is there a signed outsourcing agreement in force?","Y","Yes","Master service agreement executed 12 Mar 2024, reviewed by Legal; annexure 3 lists the service schedules in scope.","MSA_2024.pdf","2027-03-12"],
+    ["Q02","Governance","Has a materiality assessment been completed for this engagement?","Y","Yes","","",""],
+    ["Q03","InfoSec","Does the vendor hold a current ISO 27001 certification?","Y","Yes","Certificate attached.","ISO27001_cert.pdf","2026-06-09"],
+    ["Q04","InfoSec","Is customer data encrypted at rest and in transit?","Y","Yes","We have adequate controls in place.","",""],
+    ["Q05","InfoSec","Is multi-factor authentication enforced for privileged access?","Y","N/A","","",""],
+    ["Q06","BCP","Has a BCP/DR test been performed in the last 12 months?","Y","","","",""],
+    ["Q07","BCP","Is there a documented business continuity plan for this service?","Y","Yes","BCP v4.2 dated Jan 2026 covers RTO 4h / RPO 15min for the reconciliation service; last tested Feb 2026 with observations closed.","BCP_v4.2.pdf",""],
+    ["Q08","Sub-outsourcing","Does the vendor sub-contract any part of the service?","Y","No","No sub-outsourcing arrangements are in place for this engagement.","",""],
+    ["Q09","Sub-outsourcing","List any fourth parties involved in service delivery.","N","","Data entry is handled by QuickServe BPO, Indore, under a back-to-back agreement.","",""],
+    ["Q10","SLA","Were all service levels met in the review period?","Y","Yes","We have adequate controls in place.","",""],
+    ["Q11","Access","Are joiner/mover/leaver access reviews performed quarterly?","Y","Yes","Access reviews completed quarterly; last review 15 Aug 2026 closed 3 orphan accounts.","AccessReview_Q2.xlsx","2026-10-20"],
+    ["Q12","Data protection","Is personal data shared with the vendor?","Y","Yes","Customer KYC data is shared under the DPA annexure; DPDP consent flows are documented in the privacy notice.","DPA_annex.pdf","2027-01-15"],
+    ["Q13","Cyber","Has a VAPT been conducted in the last 12 months?","Y","Yes","VAPT report attached.","",""],
+    ["Q14","Compliance","Are any regulatory findings open against the vendor?","Y","No","None reported by the vendor in the period; confirmed against the incident register.","",""],
+    ["Q15","Exit","Is there a documented exit plan?","Y","Yes","Exit plan documented.","ExitPlan.docx","2027-05-01"],
+  ]
+};
+
+/* ---------- state ---------- */
+let grid = null;          // array of arrays (raw sheet)
+let headerIdx = 0;
+let headers = [];
+let mapping = {};         // role.key -> col index or -1
+let items = [];           // parsed rows
+let ruleObs = [];         // deterministic observations
+let aiObs = [];           // AI observations
+let assumptions = [];
+let parseRate = 1;
+let isSample = true;
+let workbook = null;
+let sampleCap = null, downloadsCap = null;
+let aiCtl = null;
+
+const $ = id => document.getElementById(id);
+const norm = s => String(s==null?"":s).toLowerCase().replace(/[^a-z0-9 ]+/g," ").replace(/\s+/g," ").trim();
+const blank = v => { const s = String(v==null?"":v).trim(); return s==="" || s==="-" || s==="—" || s==="–"; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- parsing ---------- */
+function detectHeader(g){
+  let best = 0, bestScore = -1;
+  for (let r = 0; r < Math.min(10, g.length); r++){
+    let score = 0;
+    for (const cell of (g[r]||[])){
+      const n = norm(cell);
+      if (!n) continue;
+      for (const role of ROLES) if (role.syn.includes(n)) { score += 2; break; }
+      if (typeof cell === "string" && cell.trim()) score += .1;
+    }
+    if (score > bestScore){ bestScore = score; best = r; }
+  }
+  return best;
+}
+function autoMap(){
+  mapping = {};
+  const used = new Set();
+  for (const role of ROLES){
+    mapping[role.key] = -1;
+    for (let c = 0; c < headers.length; c++){
+      if (used.has(c)) continue;
+      if (role.syn.includes(norm(headers[c]))){ mapping[role.key] = c; used.add(c); break; }
+    }
+  }
+  // fuzzy second pass: header contains a synonym word
+  for (const role of ROLES){
+    if (mapping[role.key] >= 0) continue;
+    for (let c = 0; c < headers.length; c++){
+      if (used.has(c)) continue;
+      const h = norm(headers[c]);
+      if (!h) continue;
+      if (role.syn.some(s => h.includes(s) || s.includes(h))){ mapping[role.key] = c; used.add(c); break; }
+    }
+  }
+}
+function parseDate(v){
+  if (v == null || blank(v)) return null;
+  if (v instanceof Date) return isNaN(v) ? undefined : v;
+  if (typeof v === "number" && v > 20000 && v < 60000)
+    return new Date(Math.round((v - 25569) * 86400 * 1000));
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+  if (m){ // ambiguous d/m vs m/d — assume day-first (Indian convention), fall back if impossible
+    let d=+m[1], mo=+m[2], y=+m[3]; if (y<100) y+=2000;
+    if (mo>12 && d<=12){ const t=d; d=mo; mo=t; }
+    if (mo>=1 && mo<=12 && d>=1 && d<=31) return new Date(y, mo-1, d);
+    return undefined;
+  }
+  const t = Date.parse(s);
+  return isNaN(t) ? undefined : new Date(t);   // undefined = present but unparseable
+}
+function buildItems(){
+  items = []; assumptions = [];
+  const get = (row, key) => mapping[key] >= 0 ? row[mapping[key]] : "";
+  const mandMapped = mapping.mandatory >= 0;
+  if (!mandMapped) assumptions.push("No “Mandatory” column found — every question is treated as mandatory.");
+  if (mapping.response < 0) assumptions.push("No “Response” column mapped — completeness checks are limited. Map it in panel 2.");
+  if (mapping.just < 0) assumptions.push("No “Justification/Comments” column mapped — justification checks skipped.");
+  if (mapping.evexp < 0) assumptions.push("No “Evidence valid until” column mapped — expiry checks skipped.");
+  let bad = 0, total = 0;
+  for (let r = headerIdx + 1; r < grid.length; r++){
+    const row = grid[r] || [];
+    if (row.every(c => blank(c))) continue;
+    total++;
+    const it = {
+      row: r + 1,
+      ref: blank(get(row,"ref")) ? "R"+(r+1) : String(get(row,"ref")).trim(),
+      section: String(get(row,"section")||"").trim(),
+      question: String(get(row,"question")||"").trim(),
+      mandatory: mandMapped ? /^(y|yes|true|1|m|mandatory)$/i.test(String(get(row,"mandatory")).trim()) : true,
+      response: String(get(row,"response")==null?"":get(row,"response")).trim(),
+      just: String(get(row,"just")==null?"":get(row,"just")).trim(),
+      evref: String(get(row,"evref")==null?"":get(row,"evref")).trim(),
+      evexpRaw: get(row,"evexp"),
+    };
+    it.evexp = parseDate(it.evexpRaw);   // null = absent, undefined = unparseable
+    if (it.evexp === undefined) bad++;
+    if (!it.question && !it.response && !it.just) continue;
+    items.push(it);
+  }
+  parseRate = total ? (total - bad) / total : 1;
+}
+
+/* ---------- deterministic checks ---------- */
+function runChecks(){
+  ruleObs = [];
+  const add = (check, sev, it, detail, action, dim, pts) =>
+    ruleObs.push({check, sev, ref: it ? it.ref : "—", question: it ? it.question : "", detail, action, dim, pts, ai:false, blocking: sev === "Blocking"});
+  const isNA = r => /^(na|n\/a|n a|not applicable)$/i.test(norm(r));
+  const isAffirm = r => /^(y|yes|true|implemented|in place|compliant|complete)$/i.test(String(r).trim());
+  const justMapped = mapping.just >= 0, evMapped = mapping.evref >= 0;
+
+  for (const it of items){
+    // QA-01 blank mandatory response
+    if (it.mandatory && blank(it.response) && mapping.response >= 0)
+      add("QA-01","High",it,"Mandatory question left blank.","Return to submitter: response required before the assessment can be relied on.","completeness",3);
+    // QA-02 unjustified N/A
+    if (isNA(it.response) && justMapped && blank(it.just))
+      add("QA-02","Medium",it,"Answered N/A with no justification.","Require a stated reason why the question does not apply to this engagement.","completeness",2);
+    // Justification checks
+    if (justMapped && !blank(it.response) && !isNA(it.response)){
+      if (blank(it.just))
+        add("QA-05","Medium",it,"Answer given with no supporting comment.","Ask the submitter to explain how the answer is known — reference, date, scope.","justification",2);
+      else {
+        if (it.just.length < 25)
+          add("QA-05","Medium",it,`Justification too thin to review (“${it.just.slice(0,40)}”).`,"Request a specific, evidenced comment: what, when, verified how.","justification",2);
+        const jn = norm(it.just);
+        if (GENERIC.some(g => jn.includes(g)))
+          add("QA-07","Low",it,"Boilerplate language — the comment could apply to any question.","Request an answer specific to this control and this engagement.","justification",1);
+      }
+    }
+    // QA-09 missing evidence for affirmative mandatory answers
+    if (evMapped && it.mandatory && isAffirm(it.response) && blank(it.evref) && /evidence|certif|test|report|plan|review|vapt|audit|agreement|iso|soc/i.test(it.question))
+      add("QA-09","High",it,"Affirmative answer to an evidence-bearing question with no document referenced.","Request the supporting document; an assertion is not evidence.","evidence",3);
+    // QA-11 expired evidence (blocking) + forward-looking lapse
+    if (it.evexp instanceof Date){
+      if (it.evexp < TODAY)
+        add("QA-11","Blocking",it,`Evidence expired ${it.evexp.toISOString().slice(0,10)} (${it.evref||"unnamed document"}).`,"Blocking: obtain current evidence before acceptance. Expired evidence for a control invalidates reliance regardless of score.","evidence",6);
+      else if ((it.evexp - TODAY) / 86400000 <= 60)
+        add("QA-11","Info",it,`Evidence expires within 60 days (${it.evexp.toISOString().slice(0,10)}).`,"Chase renewal now — feeds the certification-lapse early-warning signal.","evidence",1);
+    }
+    // QA-13 unparseable date
+    if (it.evexp === undefined)
+      add("QA-13","Low",it,`Evidence expiry date could not be read (“${String(it.evexpRaw).slice(0,20)}”).`,"Correct the date format (use YYYY-MM-DD).","hygiene",1);
+  }
+  // QA-06 copy-paste: identical justifications across questions
+  const seen = new Map();
+  for (const it of items){
+    const jn = norm(it.just);
+    if (jn.length < 16) continue;
+    if (!seen.has(jn)) seen.set(jn, []);
+    seen.get(jn).push(it);
+  }
+  for (const group of seen.values()){
+    if (group.length < 2) continue;
+    const refs = group.map(g => g.ref).join(", ");
+    add("QA-06","Medium",group[0],`Identical justification pasted across ${group.length} questions (${refs}).`,"Copy-forward answers cannot evidence distinct controls — request question-specific responses.","hygiene",group.length - 1);
+  }
+}
+
+/* ---------- scoring & render ---------- */
+function computeAndRender(){
+  const obs = ruleObs.concat(aiObs);
+  obs.sort((a,b) => (SEV_ORDER[a.sev]-SEV_ORDER[b.sev]) || String(a.ref).localeCompare(String(b.ref), undefined, {numeric:true}));
+  const dims = {};
+  for (const d in CAPS) dims[d] = 0;
+  for (const o of obs) if (o.sev !== "Info") dims[o.dim] = Math.min(CAPS[o.dim], dims[o.dim] + o.pts);
+  const aqs = Math.max(0, Math.min(100, Math.round(100 - Object.values(dims).reduce((a,b)=>a+b,0))));
+  const blocking = obs.filter(o => o.blocking);
+  const band = aqs >= 85 ? ["Accept","accept"] : aqs >= 70 ? ["Advisory","advisory"] : aqs >= 55 ? ["Rework","rework"] : ["Reject","reject"];
+
+  $("aqsVal").textContent = items.length ? aqs : "–";
+  const chip = $("bandChip"); chip.textContent = band[0]; chip.className = "chip " + band[1];
+  const counts = {};
+  for (const o of obs) counts[o.sev] = (counts[o.sev]||0) + 1;
+  $("obsVal").textContent = obs.length;
+  $("obsNote").textContent = ["Blocking","High","Medium","Low","Info"].filter(s=>counts[s]).map(s=>`${counts[s]} ${s.toLowerCase()}`).join(" · ") || "none raised";
+  $("blockVal").textContent = blocking.length;
+  // confidence
+  let mapScore = 0;
+  for (const k in CORE_WEIGHTS) if (mapping[k] >= 0) mapScore += CORE_WEIGHTS[k];
+  const conf = Math.round(100 * (mapScore * .7 + parseRate * .3));
+  $("confVal").textContent = conf + "%";
+  $("confNote").textContent = conf < 60 ? "low — check column mapping" : "column mapping × parse rate";
+  // routing
+  $("routeVal").textContent = blocking.length ? "Escalation — human review" :
+    band[0]==="Accept" ? "Auto-close eligible (below Tier 1)" :
+    band[0]==="Advisory" ? "Observations logged" :
+    band[0]==="Rework" ? "Return to submitter" : "Escalate — not fit for reliance";
+  const bb = $("blockbar");
+  bb.hidden = !blocking.length;
+  if (blocking.length) bb.innerHTML = `<strong>${blocking.length} blocking rule${blocking.length>1?"s":""} fired.</strong> These defects bypass the score bands and require a named human reviewer: ` + esc(blocking.map(o=>`${o.check} on ${o.ref}`).join("; ")) + ".";
+  // dimension bars
+  $("dims").innerHTML = Object.keys(CAPS).map(d => {
+    const na = d === "policy";
+    const v = na ? 0 : dims[d];
+    return `<div class="dim${na?" na":""}"><div class="row"><span class="name">${DIM_NAMES[d]}</span><span class="num">${na?"not assessed":"−"+v+" / "+CAPS[d]}</span></div><div class="bar"><i style="width:${na?100:Math.round(100*v/CAPS[d])}%"></i></div></div>`;
+  }).join("");
+  // table
+  const body = $("obsBody");
+  body.innerHTML = obs.length ? obs.map(o => `<tr>
+      <td class="sev"><span class="sevtag sev-${o.sev}">${o.sev}</span>${o.ai?` <span class="chip ai">AI</span>`:""}</td>
+      <td class="check">${o.check}</td>
+      <td class="ref">${esc(o.ref)}</td>
+      <td>${esc(o.detail)}${o.question?`<span class="q">${esc(o.question.slice(0,110))}</span>`:""}</td>
+      <td class="action">${esc(o.action)}</td>
+    </tr>`).join("")
+    : `<tr><td colspan="5" class="empty">${items.length ? "No observations — clean submission on the checks this tool can run." : "No data yet — upload a workbook."}</td></tr>`;
+  $("assumps").innerHTML = assumptions.map(a => `<li>${esc(a)}</li>`).join("");
+  $("csvBtn").hidden = !(downloadsCap && obs.length);
+}
+
+/* ---------- mapping UI ---------- */
+function renderMapping(){
+  $("mapFields").innerHTML = ROLES.map(role => `<div class="field"><label for="map_${role.key}">${role.name}</label>
+    <select id="map_${role.key}" data-role="${role.key}">
+      <option value="-1">— not present —</option>
+      ${headers.map((h,c)=>`<option value="${c}"${mapping[role.key]===c?" selected":""}>${esc(String(h||("column "+(c+1))).slice(0,42))}</option>`).join("")}
+    </select></div>`).join("");
+  for (const sel of $("mapFields").querySelectorAll("select"))
+    sel.addEventListener("change", () => { mapping[sel.dataset.role] = +sel.value; });
+}
+function rerun(){
+  buildItems(); runChecks(); aiObs = []; computeAndRender();
+  $("aiStatus").textContent = "AI review grades each justification against the five-criterion rubric and looks for contradictions between answers.";
+}
+
+/* ---------- load flows ---------- */
+function loadGrid(g, sampleFlag, name){
+  grid = g; isSample = sampleFlag;
+  headerIdx = detectHeader(grid);
+  headers = (grid[headerIdx] || []).map(h => String(h==null?"":h).trim());
+  autoMap(); renderMapping(); rerun();
+  $("srcBanner").hidden = !sampleFlag;
+  if (name) $("fileStatus").textContent = `${name} — ${items.length} question rows read (header row ${headerIdx+1}).`;
+}
+function loadSheet(idx){
+  const ws = workbook.Sheets[workbook.SheetNames[idx]];
+  const g = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:""});
+  loadGrid(g, false, currentFileName + " · " + workbook.SheetNames[idx]);
+}
+let currentFileName = "";
+async function handleFile(file){
+  if (!window.XLSX){ $("fileStatus").textContent = "Spreadsheet library failed to load — check your connection and reload."; return; }
+  currentFileName = file.name;
+  $("fileStatus").textContent = "Reading " + file.name + "…";
+  try{
+    const buf = await file.arrayBuffer();
+    workbook = XLSX.read(buf, {type:"array", cellDates:true});
+    const names = workbook.SheetNames;
+    const sf = $("sheetField");
+    if (names.length > 1){
+      sf.hidden = false;
+      $("sheetSel").innerHTML = names.map((n,i)=>`<option value="${i}">${esc(n)}</option>`).join("");
+      // pick the sheet with the most rows by default
+      let best = 0, bestRows = -1;
+      names.forEach((n,i)=>{ const r = XLSX.utils.decode_range(workbook.Sheets[n]["!ref"]||"A1").e.r; if (r > bestRows){ bestRows = r; best = i; }});
+      $("sheetSel").value = best;
+      loadSheet(best);
+    } else { sf.hidden = true; loadSheet(0); }
+  } catch(e){
+    $("fileStatus").textContent = "Could not read that file — is it a valid .xlsx/.xls/.csv? (" + (e && e.message ? e.message.slice(0,80) : "unknown error") + ")";
+  }
+}
+
+/* ---------- AI deep review ---------- */
+async function runAI(){
+  const cand = items.filter(it => !blank(it.just)).slice(0, 30)
+    .map(it => ({ref: it.ref, question: it.question.slice(0,160), response: it.response.slice(0,60), justification: it.just.slice(0,400)}));
+  if (!cand.length){ $("aiStatus").textContent = "Nothing to review — no free-text justifications found."; return; }
+  aiCtl = new AbortController();
+  $("aiBtn").disabled = true; $("aiStop").hidden = false;
+  $("aiStatus").textContent = "Thinking…";
+  const prompt =
+`You are a strict outsourcing-compliance QA reviewer. Below are answers from one vendor assessment as a JSON array of {ref, question, response, justification}.
+
+1. Grade each justification against a five-criterion rubric: specific (names dates/documents/scope), evidenced (points to something verifiable), current (refers to the recent period), relevant (answers this question), complete (covers the whole question). verdict "pass" = fails 0-1 criteria, "weak" = fails 2, "fail" = fails 3+.
+2. Identify contradictions: pairs of items whose answers cannot both be true (e.g. "no sub-contracting" vs a named fourth party).
+
+Reply with only JSON, no other text:
+{"items":[{"ref":"Q01","failed":["specific"],"verdict":"pass","note":"≤15 words"}],"contradictions":[{"a":"Q08","b":"Q09","note":"≤15 words"}]}
+Include every input ref exactly once in "items". Use only refs that appear in the input.
+
+Input:
+` + JSON.stringify(cand);
+  try{
+    const result = await sampleCap.json(prompt, {
+      signal: aiCtl.signal,
+      onText: ({text}) => { $("aiStatus").textContent = "Reviewing… " + text.length + " chars"; },
+    });
+    aiObs = [];
+    const byRef = new Map(items.map(it => [it.ref, it]));
+    const flaggedRefs = new Set(ruleObs.filter(o => o.dim === "justification").map(o => o.ref));
+    for (const r of (Array.isArray(result?.items) ? result.items : [])){
+      const it = byRef.get(String(r?.ref)); if (!it) continue;
+      const v = String(r?.verdict||"").toLowerCase();
+      if (v !== "weak" && v !== "fail") continue;
+      if (flaggedRefs.has(it.ref)) continue;  // already deducted by rules
+      const failed = Array.isArray(r.failed) ? r.failed.map(String).slice(0,5).join(", ") : "";
+      aiObs.push({check:"QA-05", sev: v==="fail" ? "High" : "Medium", ref: it.ref, question: it.question,
+        detail:`Justification ${v}s the rubric${failed?` (fails: ${failed})`:""}. ${String(r.note||"").slice(0,120)}`,
+        action:"Request a rewrite meeting all five criteria; reviewer to confirm before disposition.",
+        dim:"justification", pts: v==="fail" ? 4 : 2, ai:true, blocking:false});
+    }
+    for (const c of (Array.isArray(result?.contradictions) ? result.contradictions : [])){
+      const a = byRef.get(String(c?.a)), b = byRef.get(String(c?.b)); if (!a || !b) continue;
+      aiObs.push({check:"QA-04", sev:"High", ref:`${a.ref} × ${b.ref}`, question:a.question,
+        detail:`Answers conflict. ${String(c.note||"").slice(0,140)}`,
+        action:"Resolve which answer is true; a contradiction on sub-outsourcing or scope may be a blocking condition — reviewer decides.",
+        dim:"consistency", pts:5, ai:true, blocking:false});
+    }
+    computeAndRender();
+    $("aiStatus").textContent = `AI review complete — ${aiObs.length} additional item${aiObs.length===1?"":"s"} flagged (suggestions until a reviewer confirms).`;
+  } catch(e){
+    const code = e && e.code;
+    $("aiStatus").textContent =
+      code === "cancelled" ? "AI review stopped." :
+      code === "not_granted" || code === "sampling_disabled" ? "AI review isn't available for this view." :
+      code === "rate_limited" ? "Rate limited — try again in a little while." :
+      code === "invalid_json" ? "The AI reply couldn't be parsed — try again." :
+      "AI review failed — try again. (" + (code||"error") + ")";
+    if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared") $("aiBtn").hidden = true;
+  } finally {
+    $("aiBtn").disabled = false; $("aiStop").hidden = true; aiCtl = null;
+  }
+}
+
+/* ---------- exports ---------- */
+function obsCSV(){
+  const rows = [["Severity","Check","Ref","Question","Finding","Suggested action","Source"]];
+  for (const o of ruleObs.concat(aiObs))
+    rows.push([o.sev, o.check, o.ref, o.question, o.detail, o.action, o.ai ? "AI (unconfirmed)" : "Rules"]);
+  return rows.map(r => r.map(f => `"${String(f).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+}
+const TEMPLATE_CSV = [
+  "Ref,Section,Question,Mandatory,Response,Justification,Evidence Reference,Evidence Valid Until",
+  'Q01,Governance,Is there a signed outsourcing agreement in force?,Y,Yes,"MSA executed 12 Mar 2024, reviewed by Legal; annexure 3 lists service schedules.",MSA_2024.pdf,2027-03-12',
+  'Q02,InfoSec,Does the vendor hold a current ISO 27001 certification?,Y,Yes,"Certificate 27001-XXXX issued by the certification body, scope covers the delivery centre.",ISO27001_cert.pdf,2027-06-30',
+].join("\r\n");
+
+/* ---------- wire up ---------- */
+const drop = $("drop"), fileInput = $("file");
+drop.addEventListener("click", () => fileInput.click());
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); fileInput.click(); }});
+fileInput.addEventListener("change", () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); fileInput.value=""; });
+for (const ev of ["dragover","dragenter"]) drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); });
+for (const ev of ["dragleave","drop"]) drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); });
+drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+$("sheetSel").addEventListener("change", () => loadSheet(+$("sheetSel").value));
+$("rerunBtn").addEventListener("click", rerun);
+$("aiStop").addEventListener("click", () => aiCtl && aiCtl.abort());
+$("csvBtn").addEventListener("click", async () => {
+  try{ await downloadsCap.save({filename:"qa-observations.csv", data: obsCSV()}); } catch(e){ /* declined */ }
+});
+$("tplBtn").addEventListener("click", async () => {
+  try{ await downloadsCap.save({filename:"assessment-template.csv", data: TEMPLATE_CSV}); } catch(e){ /* declined */ }
+});
+
+/* first frame: analyse the sample so the page opens working */
+loadGrid([SAMPLE.headers, ...SAMPLE.rows], true, null);
+$("fileStatus").textContent = "Showing built-in sample — " + items.length + " question rows.";
+
+/* capabilities light up when/if available */
+(async () => {
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  claude.use("sample").then(s => { sampleCap = s; if (s){ $("aiBtn").hidden = false; $("aiBtn").addEventListener("click", runAI); }});
+  claude.use("downloads").then(d => { downloadsCap = d; if (d){ $("tplBtn").hidden = false; computeAndRender(); }});
+})();
+</script>
