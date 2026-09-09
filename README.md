@@ -8,7 +8,18 @@ service providers.
 
 ## Contents
 
-`outsourcing-qa-framework.html` — the full blueprint, covering:
+`ai-qa-framework-solution-design.md` — the complete solution design (v1.0),
+extending the blueprint into: the assessment QA detection catalogue, intelligent
+compliance review (RAG over a clause-level obligations library), oversight and
+thematic analysis layers, the early warning system, the full scoring methodology
+(AQS / VCR / EWI plus the CCRI reporting index with bands and escalation
+thresholds), target operating model with detailed RACI, data architecture and
+knowledge repository, Microsoft technology stack (Fabric, Azure AI, Copilots,
+Power Platform, Purview), dashboard wireframes, data model, AI governance and
+human-in-the-loop controls, KPI/KRI catalogue, benefits/ROI shape, the AI
+Compliance Center of Excellence, and the implementation roadmap.
+
+`outsourcing-qa-framework.html` — the narrative blueprint, covering:
 
 | Section | Brief item |
 | --- | --- |
