@@ -1,0 +1,32 @@
+# Vendor Assurance Control Tower
+
+Design blueprint for an AI-powered Quality Assurance and Oversight Framework for
+outsourcing compliance, covering a population of 250,000+ outsourced vendors and
+service providers.
+
+**Published document:** https://claude.ai/code/artifact/614f50ac-a759-4270-ace8-a401b99e5f49
+
+## Contents
+
+`outsourcing-qa-framework.html` — the full blueprint, covering:
+
+| Section | Brief item |
+| --- | --- |
+| 00 Situation & sizing | Throughput model that drives the operating design |
+| 01 Target operating model | Three-lines accountability, four autonomy levels, reviewer workbench |
+| 02 AI & GenAI use cases | Portfolio sequenced by value/difficulty; deterministic-first principle |
+| 03 Data architecture | Fabric medallion lakehouse, integration inventory, three gating data problems |
+| 04 Risk scoring methodology | AQS, VCR and EWI — three separate scores, with formulas and a worked example |
+| 05 Dashboard design | Four surfaces, exception-density heat map, KPI/KRI set with thresholds |
+| 06 Implementation roadmap | 30 / 60 / 90 days, months 4–12, months 12–24 |
+| 07 Microsoft technology stack | Component mapping; where Copilot fits and where it must not |
+| 08 Governance & controls | Regulatory frame, human-review controls, audit trail, model governance |
+| 09 Where this fails | Programme failure modes and mitigations |
+
+## Status
+
+Design blueprint for review (v0.9). Volumes, FTE figures, heat-map values and
+scoring weights are illustrative planning assumptions, marked as such in the
+document, and must be replaced with measured values from the estate before use in
+any committee or supervisory submission. Regulatory references are a starting
+frame for discussion with Legal and Compliance, not legal advice.

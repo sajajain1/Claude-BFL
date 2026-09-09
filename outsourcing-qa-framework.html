@@ -1,0 +1,1093 @@
+<title>Vendor Assurance Control Tower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F1F3EE;
+  --surface:#FBFCFA;
+  --surface-2:#E7EAE2;
+  --ink:#141A1E;
+  --ink-2:#59645F;
+  --ink-3:#7C867F;
+  --rule:#D3D8CE;
+  --rule-strong:#B9C0B4;
+  --accent:#1F5D6B;
+  --accent-ink:#164852;
+  --accent-soft:#DEEAEB;
+  --t1:#8E2A2A;
+  --t2:#B5642A;
+  --t3:#B08D22;
+  --t4:#5E8048;
+  --t5:#3F6B52;
+  --hm0:#E8ECE5; --hm1:#EDD9C2; --hm2:#E7BC9B; --hm3:#D99878; --hm4:#C06B58;
+  --hm-ink:#231A17;
+  --shadow:0 1px 2px rgba(20,26,30,.05), 0 8px 24px -16px rgba(20,26,30,.28);
+  --measure:68ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11161A;
+    --surface:#171D21;
+    --surface-2:#212930;
+    --ink:#E7EBE4;
+    --ink-2:#9BA69F;
+    --ink-3:#7B857E;
+    --rule:#2C343A;
+    --rule-strong:#3E484F;
+    --accent:#78B7C2;
+    --accent-ink:#9BCDD6;
+    --accent-soft:#1A3940;
+    --t1:#D4736B; --t2:#DE9A63; --t3:#D8BC64; --t4:#9CC07E; --t5:#7FBF9C;
+    --hm0:#222A2E; --hm1:#3A3129; --hm2:#54392E; --hm3:#6E4436; --hm4:#8A4B3C;
+    --hm-ink:#F0E7E2;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11161A;
+  --surface:#171D21;
+  --surface-2:#212930;
+  --ink:#E7EBE4;
+  --ink-2:#9BA69F;
+  --ink-3:#7B857E;
+  --rule:#2C343A;
+  --rule-strong:#3E484F;
+  --accent:#78B7C2;
+  --accent-ink:#9BCDD6;
+  --accent-soft:#1A3940;
+  --t1:#D4736B; --t2:#DE9A63; --t3:#D8BC64; --t4:#9CC07E; --t5:#7FBF9C;
+  --hm0:#222A2E; --hm1:#3A3129; --hm2:#54392E; --hm3:#6E4436; --hm4:#8A4B3C;
+  --hm-ink:#F0E7E2;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:Literata,Georgia,"Times New Roman",serif;text-wrap:balance;margin:0;font-weight:600}
+p,li{text-wrap:pretty}
+a{color:var(--accent-ink);text-decoration-color:var(--rule-strong);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ---------- shell ---------- */
+.shell{max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+.masthead{border-bottom:1px solid var(--rule)}
+.mast-inner{padding:clamp(40px,7vw,84px) 0 clamp(30px,5vw,52px)}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 18px
+}
+.eyebrow b{color:var(--accent-ink);font-weight:500}
+h1{font-size:clamp(2.3rem,5.4vw,3.7rem);line-height:1.06;letter-spacing:-.018em;max-width:16ch}
+.deck{font-size:clamp(1.05rem,2vw,1.22rem);color:var(--ink-2);max-width:62ch;margin:22px 0 0;line-height:1.55}
+.mast-meta{
+  display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:34px;
+  font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3)
+}
+.mast-meta span{white-space:nowrap}
+
+/* ---------- two-column body ---------- */
+.body-grid{display:block;padding-bottom:80px}
+@media (min-width:1040px){
+  .body-grid{display:grid;grid-template-columns:212px minmax(0,1fr);gap:64px;align-items:start}
+}
+nav.toc{display:none}
+@media (min-width:1040px){
+  nav.toc{
+    display:block;position:sticky;top:0;max-height:100vh;overflow-y:auto;
+    padding:56px 0 40px;font-size:.82rem
+  }
+}
+.toc-title{
+  font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);padding-bottom:10px;border-bottom:1px solid var(--rule);margin-bottom:6px
+}
+.toc a{
+  display:grid;grid-template-columns:2.6em 1fr;gap:4px;padding:7px 0;
+  color:var(--ink-2);text-decoration:none;line-height:1.32;border-bottom:1px solid transparent
+}
+.toc a .n{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-3);padding-top:2px}
+.toc a:hover{color:var(--ink)}
+.toc a[aria-current="true"]{color:var(--accent-ink);font-weight:500}
+.toc a[aria-current="true"] .n{color:var(--accent)}
+
+main{min-width:0;padding-top:clamp(34px,5vw,56px)}
+section{padding-bottom:clamp(46px,7vw,76px);scroll-margin-top:24px}
+section + section{border-top:1px solid var(--rule);padding-top:clamp(40px,6vw,64px)}
+.sec-head{margin-bottom:26px}
+.sec-num{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:9px
+}
+h2{font-size:clamp(1.55rem,3vw,2.05rem);line-height:1.16;letter-spacing:-.012em}
+h3{font-size:1.13rem;line-height:1.32;margin:38px 0 12px;letter-spacing:-.005em}
+h4{font-size:.97rem;margin:26px 0 8px;font-family:"IBM Plex Sans",sans-serif;font-weight:600}
+main p{max-width:var(--measure);margin:0 0 15px}
+main ul,main ol{max-width:var(--measure);margin:0 0 16px;padding-left:1.15em}
+main li{margin-bottom:7px}
+main li::marker{color:var(--ink-3)}
+.lede{font-size:1.06rem;color:var(--ink-2)}
+strong{font-weight:600}
+
+/* ---------- components ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);
+  border:1px solid var(--rule);margin:26px 0 4px}
+.tile{background:var(--surface);padding:16px 18px 18px}
+.tile .v{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:500;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;display:block;line-height:1.15}
+.tile .k{font-size:.79rem;color:var(--ink-2);margin-top:5px;display:block;line-height:1.38}
+
+.callout{
+  background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);
+  padding:16px 20px;margin:24px 0;max-width:var(--measure)
+}
+.callout p:last-child{margin-bottom:0}
+.callout .tag{
+  font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:7px
+}
+.callout.warn{border-left-color:var(--t2)}
+.callout.warn .tag{color:var(--t2)}
+.callout.stop{border-left-color:var(--t1)}
+.callout.stop .tag{color:var(--t1)}
+
+.tbl-wrap{overflow-x:auto;margin:22px 0 8px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.86rem}
+caption{
+  text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);padding:12px 16px 0
+}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.45}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-2);font-weight:500;border-bottom:1px solid var(--rule-strong);white-space:nowrap
+}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+.w-name{min-width:150px;font-weight:500}
+
+.pill{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.05em;
+  padding:2px 7px;border:1px solid currentColor;border-radius:2px;white-space:nowrap;line-height:1.5
+}
+.p1{color:var(--t1)} .p2{color:var(--t2)} .p3{color:var(--t3)} .p4{color:var(--t4)} .p5{color:var(--t5)}
+.p-acc{color:var(--accent)}
+
+/* funnel */
+.funnel{margin:26px 0 10px;display:flex;flex-direction:column;gap:9px;max-width:760px}
+.fr{display:grid;grid-template-columns:minmax(0,1fr);gap:5px}
+.fr-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;font-size:.83rem}
+.fr-top .lbl{color:var(--ink);font-weight:500}
+.fr-top .val{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:.79rem;white-space:nowrap}
+.bar{height:12px;background:var(--surface-2);position:relative;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);opacity:.85}
+.bar.b1 i{background:var(--t1)} .bar.b2 i{background:var(--t2)} .bar.b3 i{background:var(--t3)}
+.fr .note{font-size:.78rem;color:var(--ink-3);margin:0}
+
+/* heat map */
+.heat{overflow-x:auto;margin:22px 0 6px}
+table.hm{min-width:600px;border:1px solid var(--rule);background:var(--surface)}
+table.hm td.cell{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:center;
+  color:var(--hm-ink);border:1px solid var(--paper);font-size:.82rem;padding:11px 8px
+}
+.hm0{background:var(--hm0)} .hm1{background:var(--hm1)} .hm2{background:var(--hm2)}
+.hm3{background:var(--hm3)} .hm4{background:var(--hm4)}
+table.hm th{white-space:normal}
+.legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:.75rem;color:var(--ink-2);margin-top:10px}
+.legend .sw{display:inline-block;width:26px;height:11px;margin-right:5px;vertical-align:-1px;border:1px solid var(--rule)}
+
+/* diagram */
+figure{margin:26px 0 8px}
+.diagram{
+  border:1px solid var(--rule);background:var(--surface);padding:20px 16px;overflow-x:auto
+}
+.diagram svg{display:block;min-width:660px;width:100%;height:auto}
+.sv-box{fill:var(--surface-2);stroke:var(--rule-strong)}
+.sv-box-acc{fill:var(--accent-soft);stroke:var(--accent)}
+.sv-t{fill:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:11.5px;font-weight:500}
+.sv-s{fill:var(--ink-2);font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.07em}
+.sv-line{stroke:var(--rule-strong);fill:none}
+.sv-arrow{fill:var(--rule-strong)}
+figcaption{font-size:.79rem;color:var(--ink-3);margin-top:10px;max-width:var(--measure)}
+
+/* formula */
+.formula{
+  font-family:"IBM Plex Mono",monospace;font-size:.85rem;background:var(--surface);
+  border:1px solid var(--rule);padding:14px 16px;margin:18px 0;overflow-x:auto;line-height:1.7
+}
+.formula b{color:var(--accent-ink);font-weight:500}
+.formula .cm{color:var(--ink-3)}
+
+/* def list */
+.dl{display:grid;grid-template-columns:1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:20px 0}
+@media(min-width:700px){.dl{grid-template-columns:repeat(2,1fr)}}
+.dl > div{background:var(--surface);padding:14px 16px}
+.dl dt{font-weight:600;font-size:.9rem;margin-bottom:4px}
+.dl dd{margin:0;font-size:.85rem;color:var(--ink-2);line-height:1.5}
+
+.footer{border-top:1px solid var(--rule);padding:26px 0 60px;font-size:.8rem;color:var(--ink-3)}
+.footer p{max-width:var(--measure);margin:0 0 8px}
+
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto !important;transition:none !important;animation:none !important}
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+</style>
+
+<header class="masthead">
+  <div class="shell mast-inner">
+    <p class="eyebrow">Outsourcing Compliance &middot; <b>Design blueprint, v0.9 — for ORMC review</b></p>
+    <h1>Vendor Assurance Control Tower</h1>
+    <p class="deck">An AI-assisted quality assurance and oversight framework for outsourcing assessments across a population of 250,000+ service providers — machine review on every assessment, human judgment concentrated where it changes an outcome.</p>
+    <div class="mast-meta">
+      <span>Prepared 09 Sep 2026</span>
+      <span>Scope: assessment QA, thematic analysis, early warning</span>
+      <span>Stack: Microsoft Fabric + Azure AI + Power Platform</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell body-grid">
+
+<nav class="toc" aria-label="Contents">
+  <div class="toc-title">Contents</div>
+  <a href="#situation"><span class="n">00</span><span>Situation &amp; sizing</span></a>
+  <a href="#tom"><span class="n">01</span><span>Target operating model</span></a>
+  <a href="#usecases"><span class="n">02</span><span>AI &amp; GenAI use cases</span></a>
+  <a href="#data"><span class="n">03</span><span>Data architecture</span></a>
+  <a href="#scoring"><span class="n">04</span><span>Risk scoring method</span></a>
+  <a href="#dashboards"><span class="n">05</span><span>Dashboard design</span></a>
+  <a href="#roadmap"><span class="n">06</span><span>Roadmap</span></a>
+  <a href="#stack"><span class="n">07</span><span>Microsoft stack</span></a>
+  <a href="#governance"><span class="n">08</span><span>Governance &amp; controls</span></a>
+  <a href="#risks"><span class="n">09</span><span>Where this fails</span></a>
+</nav>
+
+<main>
+
+<!-- ============ 00 SITUATION ============ -->
+<section id="situation">
+  <div class="sec-head">
+    <span class="sec-num">00 — Context</span>
+    <h2>Sizing the problem before designing the solution</h2>
+  </div>
+
+  <p class="lede">A 250,000-entity vendor population cannot be QA'd the way a 2,000-entity population is. The design has to start from throughput arithmetic, because that arithmetic decides the operating model — not the other way round.</p>
+
+  <p>The figures below are a <strong>planning model</strong> built from stated assumptions, not measured facts from your estate. Replace each with your actuals in week one; the shape of the conclusion is robust to fairly large changes in the inputs, but the FTE numbers are not.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Assumption set A — assessment volume (to be replaced with actuals)</caption>
+      <thead>
+        <tr><th class="w-name">Population segment</th><th class="num">Vendors</th><th>Assessment cadence</th><th class="num">Assessments / yr</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Tier 1 — Critical / material outsourcing</td><td class="num">3,500</td><td>Full annual + quarterly monitoring + control testing</td><td class="num">24,500</td></tr>
+        <tr><td class="w-name">Tier 2 — Material, non-critical</td><td class="num">21,500</td><td>Full annual + semi-annual SLA review</td><td class="num">64,500</td></tr>
+        <tr><td class="w-name">Tier 3 — Important, non-material</td><td class="num">50,000</td><td>Biennial full + annual attestation</td><td class="num">75,000</td></tr>
+        <tr><td class="w-name">Tier 4/5 — Standard &amp; low</td><td class="num">175,000</td><td>Triennial refresh + annual light attestation</td><td class="num">117,000</td></tr>
+        <tr><td class="w-name">Event-driven (incidents, onboarding, exits, adverse media)</td><td class="num">—</td><td>Triggered</td><td class="num">~29,000</td></tr>
+        <tr><td class="w-name"><strong>Total</strong></td><td class="num"><strong>250,000</strong></td><td>—</td><td class="num"><strong>~310,000</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><span class="v">~1,240</span><span class="k">Assessments completed per business day</span></div>
+    <div class="tile"><span class="v">145 FTE</span><span class="k">To QA 100% manually at 45 min each</span></div>
+    <div class="tile"><span class="v">~5%</span><span class="k">Realistic manual sampling coverage today</span></div>
+    <div class="tile"><span class="v">95%</span><span class="k">Of assessments currently never QA'd at all</span></div>
+  </div>
+
+  <p style="margin-top:22px">That last figure is the actual problem. The department is not slow — it is <em>blind</em> across nineteen twentieths of the estate, and the sample it does review is chosen by availability rather than by risk. An AI QA layer's first contribution is not speed. It is <strong>coverage</strong>: a machine opinion on every assessment, which converts an unmeasured population into a measured one and lets the sampling become risk-directed.</p>
+
+  <h3>The triage this produces</h3>
+
+  <div class="funnel" role="img" aria-label="Triage funnel: 310,000 assessments screened by machine, 88 percent auto-accepted, 37,200 flagged, of which 2,600 escalate to senior review.">
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">Assessments submitted</span><span class="val">310,000 / yr &middot; 100%</span></div>
+      <div class="bar"><i style="width:100%"></i></div>
+      <p class="note">Every assessment receives deterministic checks + LLM review. No sampling at this stage.</p>
+    </div>
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">Auto-accepted (quality score &ge; 85, no blocking rule)</span><span class="val">272,800 &middot; 88%</span></div>
+      <div class="bar"><i style="width:88%"></i></div>
+      <p class="note">5% blind re-review sample (13,640/yr) routed to humans as a control on the model, not on the vendor.</p>
+    </div>
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">Flagged for human disposition</span><span class="val">37,200 &middot; 12%</span></div>
+      <div class="bar b3"><i style="width:12%"></i></div>
+      <p class="note">Target flag rate. Below 6% the model is under-detecting; above 20% reviewers stop trusting it.</p>
+    </div>
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">— Light disposition (clarification, re-attach evidence)</span><span class="val">26,000 &middot; ~5 min each</span></div>
+      <div class="bar b3"><i style="width:8.4%"></i></div>
+    </div>
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">— Standard review (weak justification, contradiction)</span><span class="val">8,600 &middot; ~20 min each</span></div>
+      <div class="bar b2"><i style="width:2.8%"></i></div>
+    </div>
+    <div class="fr">
+      <div class="fr-top"><span class="lbl">— Escalation (policy breach, Tier 1 vendor, systemic signal)</span><span class="val">2,600 &middot; ~60 min each</span></div>
+      <div class="bar b1"><i style="width:0.84%"></i></div>
+    </div>
+  </div>
+
+  <p>Reviewer effort under this model is roughly <strong>8,700 hours a year — about 5.5 FTE</strong> — against 145 FTE for equivalent manual coverage, while raising coverage from 5% to 100%. Add ~2 FTE for model oversight, back-testing and thematic analysis. The honest framing for your steering committee is not headcount reduction; it is <em>a 20&times; increase in assurance coverage for roughly the team you have</em>.</p>
+
+  <div class="callout warn">
+    <span class="tag">Do not skip this</span>
+    <p>These numbers depend entirely on the flag rate holding near 12% at acceptable precision. If the model flags 35% of assessments because your forms permit free-text everywhere, the reviewer queue becomes 16 FTE and the business case inverts. <strong>Form standardisation is a prerequisite, not a parallel workstream.</strong> Section 03 returns to this.</p>
+  </div>
+</section>
+
+<!-- ============ 01 TOM ============ -->
+<section id="tom">
+  <div class="sec-head">
+    <span class="sec-num">01 — Brief item 1</span>
+    <h2>Target operating model</h2>
+  </div>
+
+  <p class="lede">A federated model with a central AI assurance capability. The machine produces <em>observations</em>; only a human produces <em>findings</em>. That distinction is the load-bearing wall of the whole design, and every control in Section 08 rests on it.</p>
+
+  <h3>Where the capability sits in the three lines</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Accountability model</caption>
+      <thead>
+        <tr><th class="w-name">Actor</th><th>Line</th><th>Accountable for</th><th>Explicitly not accountable for</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="w-name">Business unit / vendor owner</td><td>1LoD</td>
+          <td>Completing assessments; remediating observations raised against their vendors; evidence quality at source</td>
+          <td>Deciding whether an AI observation is valid</td>
+        </tr>
+        <tr>
+          <td class="w-name">Outsourcing Compliance QA team</td><td>2LoD</td>
+          <td>Disposition of every flagged assessment; converting observations into findings; thematic analysis; framework standards</td>
+          <td>Building or tuning models; approving its own model changes</td>
+        </tr>
+        <tr>
+          <td class="w-name">AI Assurance Product team <span class="pill p-acc">new</span></td><td>2LoD (ring-fenced)</td>
+          <td>Rule library, prompts, retrieval corpus, scoring engine, reviewer workbench, monitoring</td>
+          <td>Dispositioning assessments; any vendor-facing decision</td>
+        </tr>
+        <tr>
+          <td class="w-name">Model Risk Management</td><td>2LoD (independent)</td>
+          <td>Independent validation before go-live and annually; challenger testing; sign-off on threshold changes</td>
+          <td>Model development or day-to-day tuning</td>
+        </tr>
+        <tr>
+          <td class="w-name">Internal Audit</td><td>3LoD</td>
+          <td>Auditing the QA process <em>and</em> the AI control itself; testing the audit trail end to end</td>
+          <td>Operating any part of the pipeline</td>
+        </tr>
+        <tr>
+          <td class="w-name">Outsourcing / Operational Risk Committee</td><td>Governance</td>
+          <td>Risk appetite thresholds, tier definitions, scoring weights, autonomy level changes</td>
+          <td>Individual assessment outcomes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="tag">Structural rule</span>
+    <p>The team that builds the model must not be the team that disposes of its output, and neither may approve a change to the scoring weights. Weight changes are an ORMC decision with MRM sign-off, version-controlled and effective-dated — because a weight change silently re-tiers thousands of vendors and is, in substance, a change to risk appetite.</p>
+  </div>
+
+  <h3>Four levels of machine autonomy</h3>
+  <p>Autonomy is granted per assessment type and per vendor tier, and is earned through measured precision — never assumed at launch. Start every new check at L0 and promote only on evidence.</p>
+
+  <div class="dl">
+    <div><dt>L0 — Shadow</dt><dd>Model scores everything; output visible only to the AI Assurance team. Used to measure precision against human decisions before anyone sees a flag. Minimum 6 weeks per new check.</dd></div>
+    <div><dt>L1 — Advisory</dt><dd>Observations shown to reviewers as suggestions with evidence citations. Reviewer decides independently. Override rate is the key metric.</dd></div>
+    <div><dt>L2 — Routing</dt><dd>Model decides <em>who reviews what and in what order</em>, and auto-accepts clean low-tier assessments. Blocked for Tier 1 vendors, which always get human eyes.</dd></div>
+    <div><dt>L3 — Auto-disposition</dt><dd>Model closes clean assessments in Tier 4/5 with 5% blind sampling. Never available for policy-breach observations, adverse findings, or any tier change.</dd></div>
+  </div>
+
+  <div class="callout stop">
+    <span class="tag">Hard limits — no autonomy level lifts these</span>
+    <p>The system never: downgrades a vendor's risk tier without human approval; closes an adverse or breach observation autonomously; issues any communication to a vendor; terminates, suspends or blocks a vendor; or auto-accepts any Tier 1 (critical/material) assessment. Adverse outcomes are always human-decided, and always attributable to a named reviewer.</p>
+  </div>
+
+  <h3>Reviewer workbench — the actual daily object</h3>
+  <p>Most programmes of this kind fail at the reviewer's screen rather than in the model. If dispositioning a flag takes more than about ninety seconds of navigation, reviewers batch-approve and the assurance value evaporates. Design requirements:</p>
+  <ul>
+    <li><strong>One queue, risk-ordered.</strong> Not a folder of assessments — a stream of observations sorted by vendor tier &times; observation severity &times; ageing. The reviewer never chooses what to work on.</li>
+    <li><strong>Evidence in the same frame.</strong> The flagged answer, the model's stated reason, the cited policy clause, and the attached evidence with the relevant span highlighted — visible together, no tab-switching.</li>
+    <li><strong>Four keystroke dispositions.</strong> Accept observation / Reject with reason / Escalate / Request rework. Rejection reason is a mandatory picklist because it is the training signal.</li>
+    <li><strong>Reviewer disagreement is data, not friction.</strong> Every override feeds weekly precision reporting and the retraining backlog.</li>
+    <li><strong>Bulk actions with a hard cap.</strong> Reviewers may accept at most 20 like-for-like observations at once, and bulk actions are excluded from the blind-sample denominator so they cannot dilute the control.</li>
+  </ul>
+</section>
+
+<!-- ============ 02 USE CASES ============ -->
+<section id="usecases">
+  <div class="sec-head">
+    <span class="sec-num">02 — Brief item 2</span>
+    <h2>AI and GenAI use cases</h2>
+  </div>
+
+  <p class="lede">Sequenced by value over difficulty. Note the pattern column: roughly half of what you asked for is not a GenAI problem at all, and solving it with rules is cheaper, faster, explainable to a regulator, and 100% reproducible.</p>
+
+  <div class="callout">
+    <span class="tag">Design principle</span>
+    <p><strong>Deterministic first, LLM only where language judgment is genuinely required.</strong> Missing-field detection is a rule. Evidence-expiry checking is a date comparison. Contradiction detection across a fixed question set is a rule matrix. Reserve the model — and the model-risk overhead that comes with it — for the three things only it can do: judging whether prose is substantive, extracting facts from unstructured evidence, and clustering findings by meaning.</p>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Use case portfolio</caption>
+      <thead>
+        <tr><th class="w-name">Use case</th><th>Pattern</th><th>Wave</th><th>Value</th><th>Difficulty</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Completeness &amp; conditional-logic validation</td><td>Rules engine</td><td><span class="pill p-acc">Wave 1</span></td><td>High</td><td>Low</td></tr>
+        <tr><td class="w-name">Evidence presence, type match, validity window, period coverage</td><td>Rules + metadata</td><td><span class="pill p-acc">Wave 1</span></td><td>High</td><td>Low</td></tr>
+        <tr><td class="w-name">Contradiction detection across answer pairs</td><td>Rule matrix</td><td><span class="pill p-acc">Wave 1</span></td><td>High</td><td>Low–Med</td></tr>
+        <tr><td class="w-name">Data hygiene: duplicate text, sub-threshold completion time, copy-forward from prior year</td><td>Statistical</td><td><span class="pill p-acc">Wave 1</span></td><td>Med</td><td>Low</td></tr>
+        <tr><td class="w-name">Justification sufficiency scoring against a rubric</td><td>LLM + rubric</td><td><span class="pill p-acc">Wave 1</span></td><td>High</td><td>Medium</td></tr>
+        <tr><td class="w-name">Evidence–answer corroboration (does the SOC 2 actually support the claim?)</td><td>Doc AI + LLM</td><td>Wave 2</td><td>Very high</td><td>High</td></tr>
+        <tr><td class="w-name">Policy &amp; regulatory conformance checking</td><td>RAG over clause library</td><td>Wave 2</td><td>Very high</td><td>High</td></tr>
+        <tr><td class="w-name">Certificate extraction (SOC 2 Type II, ISO 27001, PCI DSS): scope, period, exceptions, CUECs</td><td>Doc AI + LLM</td><td>Wave 2</td><td>High</td><td>Medium</td></tr>
+        <tr><td class="w-name">Thematic clustering of findings into control gaps</td><td>Embeddings + clustering</td><td>Wave 2</td><td>High</td><td>Medium</td></tr>
+        <tr><td class="w-name">Cross-vendor answer plagiarism (same boilerplate across unrelated vendors)</td><td>Embeddings</td><td>Wave 2</td><td>Med</td><td>Low</td></tr>
+        <tr><td class="w-name">Early-warning composite &amp; anomaly detection</td><td>Statistical + ML</td><td>Wave 3</td><td>Very high</td><td>Medium</td></tr>
+        <tr><td class="w-name">Concentration &amp; nth-party graph analysis</td><td>Graph analytics</td><td>Wave 3</td><td>High</td><td>High</td></tr>
+        <tr><td class="w-name">Reviewer copilot: draft observation narrative, cite clause, propose remediation</td><td>GenAI assistant</td><td>Wave 3</td><td>Med</td><td>Low</td></tr>
+        <tr><td class="w-name">Assessment-in-flight guidance to the 1LoD preparer</td><td>GenAI assistant</td><td>Wave 3</td><td>High</td><td>Medium</td></tr>
+        <tr><td class="w-name">Auto-drafted thematic and regulatory reporting packs</td><td>GenAI + templates</td><td>Wave 3</td><td>Med</td><td>Low</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The highest-leverage use case is upstream, not downstream</h3>
+  <p>"Assessment-in-flight guidance" sits in Wave 3 above for sequencing reasons, but it deserves separate emphasis. Every observation the QA layer raises is a defect that already escaped into the record and now costs a review cycle, a rework request and a re-submission. A lightweight check at the point of completion — <em>this justification cites no control owner or date; assessments like this are returned 60% of the time</em> — prevents the defect instead of detecting it.</p>
+  <p>Expect in-flight guidance to reduce the downstream flag rate materially within two cycles. It also changes the political character of the programme: the AI becomes something that helps the 1LoD finish faster rather than something that marks their homework. That matters more than it sounds for a 250,000-vendor rollout depending on business-unit cooperation.</p>
+
+  <h3>Justification sufficiency — the rubric, not the vibe</h3>
+  <p>"Weak justification" must be operationalised or it becomes an inconsistent, unappealable model opinion. Score each free-text justification on five binary-to-ternary criteria, and have the model return the criteria — not a holistic score:</p>
+  <ol>
+    <li><strong>Specificity</strong> — names a control, system, process or document, versus generic assurance language.</li>
+    <li><strong>Attribution</strong> — identifies an owner, team or accountable party.</li>
+    <li><strong>Currency</strong> — references a date, period or frequency within the assessment window.</li>
+    <li><strong>Evidence linkage</strong> — points to an attachment or artefact that exists in the submission.</li>
+    <li><strong>Responsiveness</strong> — actually answers the question asked, rather than an adjacent one.</li>
+  </ol>
+  <p>The model outputs the five criteria with a one-line rationale and a verbatim quote for each. The <em>score</em> is computed from the criteria in code. This makes the output auditable, tunable without prompt changes, stable across model versions, and defensible to a reviewer who disagrees — you can point at which criterion failed and why.</p>
+
+  <div class="callout warn">
+    <span class="tag">Non-negotiable for regulated use</span>
+    <p>Every model-generated observation must carry: the question ID, a verbatim quote of the text it judged, the policy or regulatory clause ID it was judged against, the rubric criterion that failed, the prompt version, the model version, and the retrieval snapshot ID. An observation without a citation trail is not usable in a regulated QA process — it cannot be defended in an audit or contested by a business unit, and it should be discarded rather than shown.</p>
+  </div>
+</section>
+
+<!-- ============ 03 DATA ============ -->
+<section id="data">
+  <div class="sec-head">
+    <span class="sec-num">03 — Brief item 3</span>
+    <h2>Data architecture and integrations</h2>
+  </div>
+
+  <p class="lede">A medallion lakehouse on Microsoft Fabric, with the GRC platform remaining the system of record for assessments and the lakehouse serving as the system of analysis. The QA engine writes observations back; it never mutates assessment data in place.</p>
+
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 940 300" role="img" aria-labelledby="pipe-title">
+        <title id="pipe-title">Pipeline: sources ingest into a bronze/silver/gold lakehouse, feed a QA engine of deterministic checks and LLM review, produce scored observations routed to a reviewer workbench, whose dispositions feed back as training signal.</title>
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" class="sv-arrow"/>
+          </marker>
+        </defs>
+
+        <text x="8" y="16" class="sv-s">SOURCES</text>
+        <rect x="8" y="26" width="150" height="30" class="sv-box"/><text x="20" y="45" class="sv-t">GRC / VRM platform</text>
+        <rect x="8" y="62" width="150" height="30" class="sv-box"/><text x="20" y="81" class="sv-t">Contracts &amp; spend</text>
+        <rect x="8" y="98" width="150" height="30" class="sv-box"/><text x="20" y="117" class="sv-t">Evidence store</text>
+        <rect x="8" y="134" width="150" height="30" class="sv-box"/><text x="20" y="153" class="sv-t">Incidents &amp; SLA</text>
+        <rect x="8" y="170" width="150" height="30" class="sv-box"/><text x="20" y="189" class="sv-t">Policy &amp; reg library</text>
+        <rect x="8" y="206" width="150" height="30" class="sv-box"/><text x="20" y="225" class="sv-t">External signals</text>
+
+        <path d="M162,131 L200,131" class="sv-line" marker-end="url(#ar)"/>
+
+        <text x="204" y="16" class="sv-s">LAKEHOUSE — ONELAKE</text>
+        <rect x="204" y="26" width="150" height="62" class="sv-box"/>
+        <text x="216" y="48" class="sv-t">Bronze</text><text x="216" y="66" class="sv-s">raw, immutable, hashed</text>
+        <rect x="204" y="94" width="150" height="62" class="sv-box"/>
+        <text x="216" y="116" class="sv-t">Silver</text><text x="216" y="134" class="sv-s">conformed vendor + control</text>
+        <rect x="204" y="162" width="150" height="74" class="sv-box"/>
+        <text x="216" y="184" class="sv-t">Gold</text><text x="216" y="202" class="sv-s">scores, observations,</text><text x="216" y="216" class="sv-s">themes, KPI marts</text>
+
+        <path d="M358,90 L396,90" class="sv-line" marker-end="url(#ar)"/>
+
+        <text x="400" y="16" class="sv-s">QA ENGINE</text>
+        <rect x="400" y="26" width="164" height="40" class="sv-box-acc"/>
+        <text x="412" y="44" class="sv-t">Deterministic checks</text><text x="412" y="59" class="sv-s">~180 rules, versioned</text>
+        <rect x="400" y="72" width="164" height="40" class="sv-box-acc"/>
+        <text x="412" y="90" class="sv-t">Document intelligence</text><text x="412" y="105" class="sv-s">evidence extraction</text>
+        <rect x="400" y="118" width="164" height="40" class="sv-box-acc"/>
+        <text x="412" y="136" class="sv-t">LLM review (RAG)</text><text x="412" y="151" class="sv-s">rubric + clause retrieval</text>
+        <rect x="400" y="164" width="164" height="40" class="sv-box-acc"/>
+        <text x="412" y="182" class="sv-t">Scoring &amp; routing</text><text x="412" y="197" class="sv-s">AQS · VCR · EWI</text>
+
+        <path d="M568,115 L606,115" class="sv-line" marker-end="url(#ar)"/>
+
+        <text x="610" y="16" class="sv-s">DISPOSITION</text>
+        <rect x="610" y="26" width="152" height="52" class="sv-box"/>
+        <text x="622" y="48" class="sv-t">Reviewer workbench</text><text x="622" y="65" class="sv-s">observation → finding</text>
+        <rect x="610" y="84" width="152" height="52" class="sv-box"/>
+        <text x="622" y="106" class="sv-t">Decision record</text><text x="622" y="123" class="sv-s">WORM · full lineage</text>
+        <rect x="610" y="142" width="152" height="52" class="sv-box"/>
+        <text x="622" y="164" class="sv-t">Write-back to GRC</text><text x="622" y="181" class="sv-s">findings + actions</text>
+
+        <path d="M766,115 L804,115" class="sv-line" marker-end="url(#ar)"/>
+
+        <text x="808" y="16" class="sv-s">CONSUMPTION</text>
+        <rect x="808" y="26" width="124" height="40" class="sv-box"/>
+        <text x="820" y="51" class="sv-t">Dashboards</text>
+        <rect x="808" y="72" width="124" height="40" class="sv-box"/>
+        <text x="820" y="97" class="sv-t">Early warning</text>
+        <rect x="808" y="118" width="124" height="40" class="sv-box"/>
+        <text x="820" y="143" class="sv-t">Reg reporting</text>
+
+        <path d="M686,200 L686,262 L482,262 L482,212" class="sv-line" marker-end="url(#ar)"/>
+        <text x="500" y="278" class="sv-s">FEEDBACK — reviewer overrides retrain thresholds, rules and rubric weights</text>
+      </svg>
+    </div>
+    <figcaption>Assessments flow left to right; reviewer dispositions flow back as the training signal. The loop at the bottom is the part most implementations omit, and it is the difference between a model that improves and one that decays.</figcaption>
+  </figure>
+
+  <h3>Integration inventory</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Source systems and integration pattern</caption>
+      <thead>
+        <tr><th class="w-name">Domain</th><th>Typical system</th><th>Pattern</th><th>Cadence</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Assessments &amp; vendor master</td><td>Archer / ServiceNow VRM / MetricStream / OneTrust</td><td>API + CDC</td><td>Near-real-time</td><td>System of record; QA writes observations back, never edits answers</td></tr>
+        <tr><td class="w-name">Contracts</td><td>Icertis / SAP Ariba / CLM</td><td>API + doc extract</td><td>Daily</td><td>Source of clause obligations: audit rights, exit, sub-outsourcing consent, data location</td></tr>
+        <tr><td class="w-name">Spend &amp; financial dependency</td><td>SAP / Oracle / Coupa</td><td>Batch</td><td>Monthly</td><td>Feeds concentration and substitutability scoring</td></tr>
+        <tr><td class="w-name">Evidence repository</td><td>SharePoint / Blob / GRC attachments</td><td>Event-driven</td><td>On upload</td><td>Hash on ingest for duplicate and copy-forward detection</td></tr>
+        <tr><td class="w-name">Incidents &amp; SLA</td><td>ServiceNow ITSM, SLA tooling</td><td>API</td><td>Hourly</td><td>Primary early-warning velocity signal</td></tr>
+        <tr><td class="w-name">Policy, standards, regulation</td><td>Policy portal, regulator publications</td><td>Curated corpus</td><td>On change</td><td>Chunked to clause level with effective dates — see below</td></tr>
+        <tr><td class="w-name">Identity &amp; access</td><td>Microsoft Entra ID</td><td>Native</td><td>Continuous</td><td>Drives row-level security by business unit</td></tr>
+        <tr><td class="w-name">Cyber posture</td><td>External rating providers</td><td>API</td><td>Weekly</td><td>Dynamic overlay only — never a primary tier driver</td></tr>
+        <tr><td class="w-name">Financial health &amp; corporate registry</td><td>Credit bureaus, registry filings</td><td>API / batch</td><td>Monthly</td><td>Distress signals for Tier 1–2; too costly to run across all 250k</td></tr>
+        <tr><td class="w-name">Sanctions &amp; adverse media</td><td>Screening provider</td><td>API</td><td>Daily (T1–2), monthly (rest)</td><td>Feeds early warning; screening hits are never auto-actioned</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Three data problems that will decide the outcome</h3>
+
+  <h4>1. Vendor identity resolution</h4>
+  <p>A 250,000-row vendor master almost certainly contains substantial duplication — the same legal entity as separate records per business unit, per procurement system, per spelling. Every downstream number is wrong until this is fixed: concentration risk is understated, a critical vendor hides behind a low-tier duplicate, and thematic analysis fragments across aliases. Build an entity-resolution layer keyed on registration numbers, tax IDs and LEIs, with fuzzy-match candidates queued for human confirmation. <strong>Budget for this properly.</strong> It is unglamorous, it is typically the largest single line in a programme like this, and skipping it invalidates the analytics you are building.</p>
+
+  <h4>2. The clause library is the actual product</h4>
+  <p>Conformance checking is only as good as the corpus it retrieves from. You need internal policy and applicable regulation decomposed to <em>individual testable obligations</em>, each with a stable clause ID, effective-from and effective-to dates, applicability rules (which entity, which vendor tier, which jurisdiction), and a mapping to the assessment questions that evidence it. Regulation changes and re-scoring must be reproducible against the version in force on the assessment date — which means retrieval is date-aware, not just semantic. This is a compliance-authoring task, not an engineering one, and it needs named owners in your department.</p>
+
+  <h4>3. Question standardisation gates everything</h4>
+  <p>If the same control is asked six different ways across six assessment templates, you cannot detect contradictions, cluster themes, or compare vendors. Map every question in every template to a canonical control taxonomy — an internal library anchored to a recognised framework such as ISO/IEC 27001 Annex A, NIST CSF 2.0 or your own control catalogue. Retire and merge templates aggressively as part of Wave 1. This is the prerequisite flagged in Section 00, and it is where the flag rate is actually decided.</p>
+
+  <div class="callout stop">
+    <span class="tag">Security control — vendor-supplied documents are untrusted input</span>
+    <p>Evidence attachments come from outside the bank and are processed by a language model. Treat every uploaded document as hostile input: a PDF can contain instructions addressed to your model. Extracted document text must be passed as <em>data</em>, never concatenated into the instruction portion of a prompt; the model must have no tool access during evidence review; outputs must be schema-validated and constrained to the question set; and any attempt at instruction-like content in an attachment should itself raise an observation for human review. This is a real and current attack path against exactly this class of system.</p>
+  </div>
+</section>
+
+<!-- ============ 04 SCORING ============ -->
+<section id="scoring">
+  <div class="sec-head">
+    <span class="sec-num">04 — Brief item 4</span>
+    <h2>Risk scoring methodology</h2>
+  </div>
+
+  <p class="lede">Three separate scores, deliberately not merged. Conflating assessment quality with vendor risk is the most common failure in this design — a perfectly completed assessment can describe a dangerous vendor, and a badly completed one can describe a safe vendor whose owner was in a hurry.</p>
+
+  <div class="dl">
+    <div><dt>AQS — Assessment Quality Score</dt><dd>0–100. Did this assessment meet documentation standards? A process-quality measure. Owned by 2LoD.</dd></div>
+    <div><dt>VCR — Vendor Composite Risk</dt><dd>0–100 residual risk, mapped to five tiers. Drives oversight intensity and assessment cadence.</dd></div>
+    <div><dt>EWI — Early Warning Index</dt><dd>A velocity measure over trailing windows. Detects deterioration between assessments, which is when it actually happens.</dd></div>
+    <div><dt>Deliberately absent</dt><dd>No single "vendor health score". Composite-of-composites hides the driver, and management will act on the number without asking what moved it.</dd></div>
+  </div>
+
+  <h3>Assessment Quality Score</h3>
+
+  <div class="formula">
+<b>AQS</b> = 100 &minus; &Sigma; (deduction<sub>i</sub> &times; severity_weight<sub>i</sub>)   <span class="cm">clamped to [0,100]</span>
+
+<b>Dimension caps</b>          <span class="cm">max deduction per dimension</span>
+  Completeness            25   <span class="cm">mandatory fields, conditional logic, unjustified N/A</span>
+  Evidence integrity      20   <span class="cm">presence, type match, validity window, period coverage</span>
+  Justification quality   20   <span class="cm">five-criterion rubric, per Section 02</span>
+  Internal consistency    15   <span class="cm">contradiction matrix across answer pairs</span>
+  Policy conformance      15   <span class="cm">mapped clause coverage, date-aware</span>
+  Data hygiene             5   <span class="cm">duplicate text, completion-time anomaly, copy-forward</span>
+
+<b>Bands</b>
+  85–100  Accept        <span class="cm">auto-close eligible below Tier 1, 5% blind sample</span>
+  70–84   Advisory      <span class="cm">observations logged, no rework required</span>
+  55–69   Rework        <span class="cm">returned to 1LoD with itemised observations</span>
+   0–54   Reject        <span class="cm">assessment not fit for reliance; escalated</span>
+  </div>
+
+  <h4>Blocking rules override the score</h4>
+  <p>Some defects are disqualifying regardless of a high AQS. These bypass the bands entirely and route straight to human review: expired or out-of-scope evidence for a critical control; a stated regulatory non-compliance; an answer contradicting the executed contract; an unconsented sub-outsourcing arrangement; assessment completed by an unauthorised or self-interested party. A 92 AQS with expired SOC 2 coverage is not an acceptable assessment, and the arithmetic must not be allowed to say otherwise.</p>
+
+  <h4>Worked example</h4>
+  <div class="formula">
+<span class="cm">Vendor: mid-tier payment reconciliation provider · Tier 2 · annual reassessment</span>
+  Completeness         4 of 62 conditional fields blank        &minus;7
+  Evidence integrity   ISO 27001 cert expired 3 months ago     &minus;12  <span class="cm">+ blocking rule fires</span>
+  Justification        9 of 40 free-text answers fail ≥3 of 5   &minus;9
+  Consistency          "no sub-outsourcing" vs. named 4th party &minus;8
+  Policy conformance   BCP test evidence absent (clause OPS-14) &minus;6
+  Data hygiene         11 answers identical to prior year       &minus;3
+                                                        <b>AQS = 55</b>
+<b>Routing:</b> Rework band AND blocking rule → escalation queue, not the rework queue.
+<b>Observations raised: 6.</b> Reviewer disposition required within 5 business days.
+  </div>
+
+  <h3>Vendor Composite Risk</h3>
+  <p>Inherent risk modified by demonstrated control effectiveness, then adjusted by a dynamic overlay. Weights below are a <strong>starting proposal for ORMC calibration</strong>, not a recommendation to adopt as-is — they must be back-tested against your own historical incidents and findings before they carry any authority.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Inherent risk factors — proposed weights for calibration</caption>
+      <thead>
+        <tr><th class="w-name">Factor</th><th class="num">Weight</th><th>Measured by</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Criticality / materiality of the outsourced function</td><td class="num">0.30</td><td>Materiality determination; support of a critical or important business service</td></tr>
+        <tr><td class="w-name">Data sensitivity and volume</td><td class="num">0.20</td><td>Classification tier, personal-data volume, cross-border transfer</td></tr>
+        <tr><td class="w-name">Concentration and substitutability</td><td class="num">0.15</td><td>Share of function, exit lead time, viable alternatives, shared-vendor exposure</td></tr>
+        <tr><td class="w-name">Sub-outsourcing depth</td><td class="num">0.10</td><td>Number of chained parties, visibility into 4th and 5th parties</td></tr>
+        <tr><td class="w-name">Financial dependency</td><td class="num">0.10</td><td>Annual spend; the bank's share of the vendor's revenue</td></tr>
+        <tr><td class="w-name">Geography and jurisdiction</td><td class="num">0.10</td><td>Delivery location, data location, legal enforceability, country risk</td></tr>
+        <tr><td class="w-name">Regulatory nexus</td><td class="num">0.05</td><td>Regulator notification or approval requirements; supervisory register entry</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="formula">
+<b>I</b>  = &Sigma; (factor_score &times; weight)              <span class="cm">inherent, 0–100</span>
+<b>C</b>  = control effectiveness, 0–1              <span class="cm">from testing, audits, certifications, remediation ageing</span>
+<b>R</b>  = I &times; (1 &minus; 0.6C)                        <span class="cm">residual — controls mitigate at most 60%</span>
+<b>D</b>  = dynamic overlay, &minus;0.10 to +0.40           <span class="cm">incidents, SLA breaches, adverse media, distress</span>
+
+<b>VCR</b> = clamp( R &times; (1 + D), 0, 100 )
+
+<b>Tiers</b>   T1 ≥ 75   T2 60–74   T3 40–59   T4 20–39   T5 &lt; 20
+  </div>
+
+  <p>The 0.6 cap on control mitigation is a deliberate conservatism: no amount of demonstrated control brings a critical, irreplaceable, cross-border vendor into the low-risk tier. Regulators expect inherent criticality to remain visible in the residual position, and a framework that lets excellent paperwork erase structural dependency will not survive supervisory review.</p>
+
+  <h4>Confidence, not just score</h4>
+  <p>Every VCR carries a confidence measure derived from data freshness, evidence completeness and source coverage. A vendor scored 34 on eight-month-old data with three missing inputs is a different management object from one scored 34 on fresh, complete data. Surface both. <strong>Low confidence on a low-risk vendor is itself an early-warning signal</strong> — it usually means nobody has looked, which is exactly the condition under which unpleasant surprises originate.</p>
+
+  <h3>Early Warning Index</h3>
+  <p>Deterioration is a rate, not a level. The EWI z-scores each signal against the vendor's own trailing baseline and its peer group, then fires on a two-of-eight rule to suppress single-signal noise.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Early-warning signals and trigger conditions</caption>
+      <thead>
+        <tr><th class="w-name">Signal</th><th>Window</th><th>Fires when</th><th>Severity</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Assessment quality decline</td><td>2 cycles</td><td>AQS drops &gt;15 points or crosses a band downward</td><td><span class="pill p3">Watch</span></td></tr>
+        <tr><td class="w-name">SLA breach velocity</td><td>90 days</td><td>Breach rate &gt;2&sigma; above vendor's own baseline</td><td><span class="pill p2">Elevated</span></td></tr>
+        <tr><td class="w-name">Incident severity drift</td><td>180 days</td><td>Any P1, or 3+ P2 in the window</td><td><span class="pill p1">Critical</span></td></tr>
+        <tr><td class="w-name">Remediation ageing</td><td>Rolling</td><td>Any finding &gt;90 days past due, or 3+ overdue</td><td><span class="pill p2">Elevated</span></td></tr>
+        <tr><td class="w-name">Certification lapse</td><td>Forward 60d</td><td>Cert expiring with no renewal evidence</td><td><span class="pill p3">Watch</span></td></tr>
+        <tr><td class="w-name">Financial distress</td><td>Quarterly</td><td>Rating downgrade, filing delay, insolvency or restructuring signal</td><td><span class="pill p1">Critical</span></td></tr>
+        <tr><td class="w-name">Adverse media / sanctions</td><td>Daily</td><td>Confirmed hit on entity or its principals</td><td><span class="pill p1">Critical</span></td></tr>
+        <tr><td class="w-name">Concentration shift</td><td>Quarterly</td><td>Vendor crosses a share threshold on a critical function</td><td><span class="pill p2">Elevated</span></td></tr>
+        <tr><td class="w-name">Engagement decay</td><td>Rolling</td><td>Assessment overdue, unresponsive to evidence requests, contact churn</td><td><span class="pill p3">Watch</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Engagement decay deserves particular attention. Vendors heading for trouble typically go quiet before anything measurable appears in the incident data — missed assessment deadlines, unanswered evidence requests, and repeated changes of relationship contact are among the earliest available signals and cost nothing to collect, because you already have them.</p>
+
+  <div class="callout warn">
+    <span class="tag">Alert discipline</span>
+    <p>Set the early-warning threshold so the total alert volume is what your team can genuinely investigate — roughly 40–60 open alerts at any time for a team of this size, not 4,000. An unactionable alert queue is worse than no alert queue: it creates a documented record that the institution was told and did nothing, which is materially harder to defend to a supervisor than not having detected it at all.</p>
+  </div>
+</section>
+
+<!-- ============ 05 DASHBOARDS ============ -->
+<section id="dashboards">
+  <div class="sec-head">
+    <span class="sec-num">05 — Brief item 5</span>
+    <h2>Dashboard design</h2>
+  </div>
+
+  <p class="lede">Four surfaces for four decisions. Build them in this order — the reviewer workbench first, because it is the one that produces the data the other three display.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Dashboard portfolio</caption>
+      <thead>
+        <tr><th class="w-name">Surface</th><th>Audience</th><th>Decision it supports</th><th>Refresh</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Reviewer workbench</td><td>2LoD QA reviewers</td><td>What do I work on next, and what do I decide?</td><td>Live</td></tr>
+        <tr><td class="w-name">Vendor 360</td><td>Vendor owners, relationship managers</td><td>What is true about this vendor, and what do I owe it?</td><td>Hourly</td></tr>
+        <tr><td class="w-name">Business unit oversight</td><td>BU heads, 1LoD risk</td><td>Where is my portfolio weak and who is overdue?</td><td>Daily</td></tr>
+        <tr><td class="w-name">Executive &amp; committee pack</td><td>ORMC, board risk, regulators</td><td>Is the outsourcing risk profile within appetite and improving?</td><td>Monthly</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Exception density by business unit and vendor tier</h3>
+  <p>The single most useful executive view: not counts, but <em>rates</em>. Counts tell you which business unit is large; rates tell you which has a problem.</p>
+
+  <div class="heat">
+    <table class="hm">
+      <caption>Illustrative shape only — exceptions per 100 assessments. Not your data.</caption>
+      <thead>
+        <tr><th class="w-name">Business unit</th><th class="num">T1 Critical</th><th class="num">T2 Material</th><th class="num">T3 Important</th><th class="num">T4 Standard</th><th class="num">T5 Low</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Retail Lending</td><td class="cell hm1">14</td><td class="cell hm2">21</td><td class="cell hm3">29</td><td class="cell hm2">18</td><td class="cell hm1">11</td></tr>
+        <tr><td class="w-name">SME &amp; Commercial</td><td class="cell hm2">19</td><td class="cell hm3">27</td><td class="cell hm4">38</td><td class="cell hm3">26</td><td class="cell hm2">16</td></tr>
+        <tr><td class="w-name">Payments &amp; Cards</td><td class="cell hm0">7</td><td class="cell hm1">12</td><td class="cell hm2">17</td><td class="cell hm1">13</td><td class="cell hm0">8</td></tr>
+        <tr><td class="w-name">Wealth &amp; Distribution</td><td class="cell hm1">11</td><td class="cell hm2">18</td><td class="cell hm2">22</td><td class="cell hm3">25</td><td class="cell hm2">15</td></tr>
+        <tr><td class="w-name">Technology &amp; Digital</td><td class="cell hm2">16</td><td class="cell hm2">20</td><td class="cell hm3">24</td><td class="cell hm2">19</td><td class="cell hm1">10</td></tr>
+        <tr><td class="w-name">Corporate Functions</td><td class="cell hm0">6</td><td class="cell hm1">10</td><td class="cell hm1">14</td><td class="cell hm2">17</td><td class="cell hm1">12</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><i class="sw hm0"></i>&lt;10</span>
+    <span><i class="sw hm1"></i>10–14</span>
+    <span><i class="sw hm2"></i>15–22</span>
+    <span><i class="sw hm3"></i>23–30</span>
+    <span><i class="sw hm4"></i>&gt;30</span>
+    <span style="color:var(--ink-3)">Every cell drills through to the underlying assessments.</span>
+  </div>
+
+  <h3>KPI and KRI set</h3>
+  <p>Deliberately short. A committee pack with forty metrics gets read as zero metrics. Each has a named owner, a defined threshold, and an escalation path — a measure without a threshold is a chart, not a control.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Core measures</caption>
+      <thead>
+        <tr><th class="w-name">Measure</th><th>Type</th><th>Definition</th><th>Proposed threshold</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Assessment QA coverage</td><td>KPI</td><td>% of completed assessments machine-reviewed</td><td>&ge;99%</td></tr>
+        <tr><td class="w-name">Mean AQS</td><td>KPI</td><td>Population mean, trended by BU and tier</td><td>&ge;80, improving QoQ</td></tr>
+        <tr><td class="w-name">First-pass acceptance rate</td><td>KPI</td><td>% accepted without rework</td><td>&ge;75%</td></tr>
+        <tr><td class="w-name">Observation disposition SLA</td><td>KPI</td><td>% dispositioned within tier-based SLA</td><td>&ge;95%</td></tr>
+        <tr><td class="w-name">Model precision</td><td>KPI</td><td>% of observations upheld by reviewers</td><td>&ge;85%</td></tr>
+        <tr><td class="w-name">Reviewer override rate</td><td>KRI</td><td>% of model observations rejected</td><td>&lt;15%; investigate &gt;25%</td></tr>
+        <tr><td class="w-name">Blind-sample escape rate</td><td>KRI</td><td>% of auto-accepted assessments failing re-review</td><td>&lt;2%</td></tr>
+        <tr><td class="w-name">Tier 1 assessment currency</td><td>KRI</td><td>% of critical vendors with a current, accepted assessment</td><td>100%; any gap escalates</td></tr>
+        <tr><td class="w-name">Overdue remediation (critical)</td><td>KRI</td><td>Count &gt;30 days past due on T1/T2 vendors</td><td>Zero tolerance</td></tr>
+        <tr><td class="w-name">Concentration exposure</td><td>KRI</td><td>Critical functions with a single provider and no viable exit</td><td>Board-set limit</td></tr>
+        <tr><td class="w-name">Nth-party visibility</td><td>KRI</td><td>% of T1 vendors with mapped and consented sub-outsourcing</td><td>&ge;95%</td></tr>
+        <tr><td class="w-name">Open early-warning alerts</td><td>KRI</td><td>Unresolved alerts by severity and age</td><td>No critical alert &gt;10 days</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Design rules for these surfaces</h3>
+  <ul>
+    <li><strong>Always show the denominator.</strong> "47 exceptions" is meaningless; "47 of 210 assessments (22%)" is a decision.</li>
+    <li><strong>Stamp the as-of time and confidence on every page.</strong> Committee members will otherwise treat a stale monthly view as live.</li>
+    <li><strong>Every aggregate drills to the record.</strong> If a director cannot get from a red cell to the named vendor and the specific observation in two clicks, they will stop trusting the aggregate.</li>
+    <li><strong>Distinguish machine observations from human findings visually and permanently.</strong> These are different objects with different evidentiary weight, and the distinction must survive into exports and committee packs.</li>
+    <li><strong>Row-level security by business unit</strong> via Entra ID group membership — with a compliance role that sees the whole estate.</li>
+    <li><strong>Trend before status.</strong> A vendor at moderate risk deteriorating for three quarters matters more than a static high-risk vendor that is already controlled and monitored.</li>
+    <li><strong>Design the export.</strong> Board packs will be circulated as PDF regardless of your intentions — make the print layout deliberate rather than accidental.</li>
+  </ul>
+</section>
+
+<!-- ============ 06 ROADMAP ============ -->
+<section id="roadmap">
+  <div class="sec-head">
+    <span class="sec-num">06 — Brief item 6</span>
+    <h2>Implementation roadmap</h2>
+  </div>
+
+  <p class="lede">Sequenced so that the first ninety days produce a defensible go/no-go decision on real data, not a proof of concept that impresses a steering committee and then dies on contact with the vendor master.</p>
+
+  <h3>Days 1–30 — Establish ground truth</h3>
+  <ul>
+    <li><strong>Measure the baseline.</strong> Take 400 historical assessments, have two senior reviewers independently QA them, and record every defect found. This is your golden dataset and your only objective measure of whether the model works. Nothing else in the programme substitutes for it.</li>
+    <li><strong>Measure human agreement first.</strong> Where the two reviewers disagree, the standard is ambiguous — and no model can beat an ambiguous standard. Expect 15–25% disagreement, and resolve those cases into written rules before building anything.</li>
+    <li>Profile the vendor master: duplication rate, tier distribution, completeness, orphan records. Publish the number honestly; it sets programme expectations.</li>
+    <li>Inventory assessment templates and map questions to a canonical control taxonomy. Identify the merge and retire list.</li>
+    <li>Stand up the Fabric workspace, landing zone, Entra groups and Purview catalog. Ingest 90 days of assessments to bronze.</li>
+    <li>Register the initiative with Model Risk Management and start the AI-use-case governance intake now — not after build. In most institutions this is the longest-lead item on the plan.</li>
+    <li><strong>Deliverable:</strong> baseline defect rates, inter-reviewer agreement, data quality report, approved scope.</li>
+  </ul>
+
+  <h3>Days 31–60 — Deterministic engine in shadow</h3>
+  <ul>
+    <li>Build and version the rules library: completeness, conditional logic, evidence validity, contradiction matrix, data hygiene. Target 150–200 rules covering the top defect categories from the baseline.</li>
+    <li>Run in shadow mode over the 90-day backlog. Compare against the golden dataset. Report precision and recall per rule, and retire rules below 70% precision rather than defending them.</li>
+    <li>Build the reviewer workbench in Power Apps against real observations. Two reviewers use it daily; iterate on their friction, not on your assumptions about it.</li>
+    <li>Prototype the AQS with ORMC-provisional weights. Publish the distribution across the backlog — if 90% of assessments score above 85, the model is not discriminating and the weights are wrong.</li>
+    <li>Assemble the clause library for one regulation and one internal policy end-to-end as a pattern proof.</li>
+    <li><strong>Deliverable:</strong> shadow-mode precision report, working workbench, AQS distribution, go/no-go on the GenAI wave.</li>
+  </ul>
+
+  <h3>Days 61–90 — GenAI layer, one segment live</h3>
+  <ul>
+    <li>Add justification-sufficiency scoring with the five-criterion rubric. Validate against the golden dataset before it reaches any reviewer.</li>
+    <li>Add document intelligence for the three highest-volume evidence types — most likely SOC 2 Type II, ISO 27001 certificates and BCP test reports.</li>
+    <li>Implement the full decision record: prompt version, model version, retrieval snapshot, citations, reviewer, disposition, timestamp — into WORM storage.</li>
+    <li><strong>Go live at L1 (advisory) for one business unit and one assessment type.</strong> Not the whole estate. Pick a segment with clean data and a cooperative owner; you are proving the operating model, not the scale.</li>
+    <li>MRM validation pack submitted. Executive dashboard v1 published to ORMC.</li>
+    <li><strong>Deliverable:</strong> production advisory QA on a live segment, validated model, first thematic analysis, measured reviewer effort per disposition.</li>
+  </ul>
+
+  <h3>Months 4–12 — Scale and earn autonomy</h3>
+  <ul>
+    <li>Roll out by business unit, one at a time, each with its own baseline and its own precision gate. Resist the pressure to enable everything at once.</li>
+    <li>Promote checks from L1 to L2 individually as each demonstrates &ge;85% precision over 8 weeks. Some checks will never be promoted; that is a correct outcome, not a failure.</li>
+    <li>Introduce L3 auto-disposition for Tier 4/5 only, with 5% blind sampling and monthly escape-rate reporting to ORMC.</li>
+    <li>Ship thematic clustering and the early-warning engine. Run EWI in shadow for a full quarter before alerts reach anyone.</li>
+    <li>Deploy in-flight guidance to 1LoD preparers — the upstream intervention from Section 02, and the largest single lever on flag rate.</li>
+    <li>First annual weight recalibration and back-test against realised incidents.</li>
+  </ul>
+
+  <h3>Months 12–24 — Continuous assurance</h3>
+  <p>The destination is not faster periodic assessment. It is the retirement of periodic assessment as the primary control for most of the population.</p>
+  <ul>
+    <li><strong>Risk-adaptive cadence.</strong> Assessment frequency driven by VCR and EWI rather than by the calendar. Stable low-risk vendors move to continuous signal monitoring with attestation only; deteriorating vendors are assessed on trigger. This is where the 250,000-vendor population becomes genuinely manageable.</li>
+    <li>Nth-party graph across the estate, with concentration and single-point-of-failure analysis at the function level rather than the vendor level.</li>
+    <li>Scenario capability: model the operational impact of a named critical provider failing, per the impact-tolerance expectations now common across major regimes.</li>
+    <li>Regulator-ready register generation directly from the lakehouse, versioned and reproducible as at any past date.</li>
+    <li>Portfolio-level predictive view: which vendor characteristics precede findings, feeding back into onboarding due diligence.</li>
+  </ul>
+</section>
+
+<!-- ============ 07 STACK ============ -->
+<section id="stack">
+  <div class="sec-head">
+    <span class="sec-num">07 — Brief item 7</span>
+    <h2>Microsoft technology stack</h2>
+  </div>
+
+  <p class="lede">Mapped to the layers in Section 03. The stack is not the hard part of this programme — but the wrong Copilot choice creates an audit problem that is expensive to unwind, so the last subsection matters more than the table.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Component mapping</caption>
+      <thead>
+        <tr><th class="w-name">Layer</th><th>Component</th><th>Role in this design</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Ingestion</td><td>Fabric Data Factory pipelines; Eventstream</td><td>Batch and CDC from GRC, CLM, ERP, ITSM; real-time incident and SLA signals</td></tr>
+        <tr><td class="w-name">Storage</td><td>OneLake, Fabric Lakehouse (Delta)</td><td>Bronze/silver/gold; single copy, shortcut rather than duplicate</td></tr>
+        <tr><td class="w-name">Transformation</td><td>Fabric Notebooks (PySpark), Dataflows Gen2</td><td>Entity resolution, conformance, control-taxonomy mapping</td></tr>
+        <tr><td class="w-name">Serving</td><td>Fabric Warehouse + Direct Lake semantic model</td><td>Gold marts for Power BI without import refresh at this volume</td></tr>
+        <tr><td class="w-name">Deterministic checks</td><td>Azure Functions / Fabric notebooks + rules store</td><td>The 150–200 versioned rules; effective-dated, independently testable</td></tr>
+        <tr><td class="w-name">Document AI</td><td>Azure AI Document Intelligence; Content Understanding</td><td>Certificate, report and contract extraction with confidence scores</td></tr>
+        <tr><td class="w-name">Retrieval</td><td>Azure AI Search (hybrid + semantic ranker)</td><td>Clause-level policy and regulatory corpus with date-aware filters</td></tr>
+        <tr><td class="w-name">Generative</td><td>Azure AI Foundry; Azure OpenAI deployments</td><td>Rubric scoring, corroboration, narrative drafting; provisioned throughput for nightly batch, pay-as-you-go for interactive</td></tr>
+        <tr><td class="w-name">Model ops</td><td>Foundry evaluations; Azure ML; MLflow registry</td><td>Golden-dataset regression before any prompt or model change ships</td></tr>
+        <tr><td class="w-name">Safety</td><td>Azure AI Content Safety; prompt shields</td><td>Injection defence on vendor-supplied documents, per Section 03</td></tr>
+        <tr><td class="w-name">Orchestration</td><td>Durable Functions; Service Bus; Logic Apps</td><td>Per-assessment workflow, retries, idempotency, dead-lettering</td></tr>
+        <tr><td class="w-name">Reviewer experience</td><td>Power Apps (model-driven) embedded in Teams</td><td>The workbench; Dataverse for disposition state</td></tr>
+        <tr><td class="w-name">Workflow</td><td>Power Automate</td><td>Rework requests, escalations, attestation chasing, approvals</td></tr>
+        <tr><td class="w-name">Alerting</td><td>Fabric Data Activator</td><td>Threshold-based early-warning alerts into Teams with ownership routing</td></tr>
+        <tr><td class="w-name">Analytics</td><td>Power BI (Premium/Fabric capacity)</td><td>Four dashboard surfaces; RLS by Entra group; paginated committee packs</td></tr>
+        <tr><td class="w-name">Governance</td><td>Microsoft Purview</td><td>Catalog, lineage, sensitivity labels, DLP, retention</td></tr>
+        <tr><td class="w-name">Identity &amp; secrets</td><td>Entra ID + PIM; Key Vault; managed identities</td><td>No standing privileged access; no secrets in code or pipelines</td></tr>
+        <tr><td class="w-name">Monitoring</td><td>Azure Monitor, Application Insights, Defender for Cloud</td><td>Latency, cost per assessment, failure rates, drift alarms</td></tr>
+        <tr><td class="w-name">Integration</td><td>Azure API Management</td><td>Fronting GRC write-back and partner APIs; throttling and audit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Where Copilot fits — and where it must not</h3>
+  <p>This distinction is worth getting explicitly right before anyone demonstrates a chat interface to your committee.</p>
+
+  <div class="dl">
+    <div><dt>Microsoft 365 Copilot &mdash; reviewer productivity</dt><dd>Summarising a long vendor history, drafting committee narrative, querying policy documents. Appropriate, low-risk, immediately useful.</dd></div>
+    <div><dt>Copilot Studio &mdash; a governed Q&amp;A agent</dt><dd>"What does our policy require for sub-outsourcing consent?" grounded on the approved clause library, published to Teams with citations. Appropriate.</dd></div>
+    <div><dt>Copilot as the QA control itself</dt><dd><strong>No.</strong> A control must be deterministic in invocation, versioned, reproducible and independently testable. An ad hoc chat session is none of those things.</dd></div>
+    <div><dt>The rule to hold</dt><dd>Copilot helps a human think. The pipeline performs the control. Anything that produces a score, an observation or a routing decision runs in the orchestrated pipeline with a full decision record — never in a chat window.</dd></div>
+  </div>
+
+  <h4>Cost shape to plan against</h4>
+  <p>At roughly 310,000 assessments a year with an average of perhaps 40 free-text answers each, the generative workload is real but bounded — and it is dominated by input tokens from retrieved clauses and extracted evidence, not by output. Three levers do most of the work: run deterministic checks first and only invoke the model on answers that need language judgment (typically a third); batch overnight on provisioned throughput rather than interactively; and cache aggressively on the clause corpus, which changes rarely. Model the cost per assessment explicitly and report it monthly as a KPI — it is the number that determines whether the platform scales to the full population or stalls at Wave 2.</p>
+</section>
+
+<!-- ============ 08 GOVERNANCE ============ -->
+<section id="governance">
+  <div class="sec-head">
+    <span class="sec-num">08 — Brief item 8</span>
+    <h2>Compliance, governance and human-review controls</h2>
+  </div>
+
+  <p class="lede">The supervisory question will not be "does your AI work?" It will be "how do you know, who checked, what happens when it is wrong, and can you show me a decision from eighteen months ago exactly as it was made?" Design for that question from day one; it is very hard to retrofit.</p>
+
+  <h3>Regulatory frame</h3>
+  <p>Two distinct sets of obligations apply, and they are frequently conflated. Confirm the current text and applicability of each with Legal and Compliance — instruments in this area are amended often, and the analysis below is a starting frame rather than legal advice.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Obligations in scope</caption>
+      <thead>
+        <tr><th class="w-name">Instrument</th><th>Applies to</th><th>Principal implication for this design</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">RBI Master Direction on Outsourcing of IT Services (2023)</td><td>The assessments</td><td>Materiality determination, due diligence, audit rights, exit strategy, sub-contracting control, concentration risk — these are what the clause library must encode</td></tr>
+        <tr><td class="w-name">RBI outsourcing of financial services guidance (banks / NBFCs)</td><td>The assessments</td><td>Governance, board oversight, grievance and continuity obligations for outsourced financial activity</td></tr>
+        <tr><td class="w-name">RBI Master Direction on IT Governance, Risk, Controls and Assurance (2023)</td><td>Both</td><td>Governs the QA platform itself as a critical internal system: change control, access, BCP, audit</td></tr>
+        <tr><td class="w-name">DPDP Act 2023 / GDPR where applicable</td><td>Both</td><td>Vendor-contact personal data minimisation; processor obligations; breach notification</td></tr>
+        <tr><td class="w-name">CERT-In directions</td><td>The platform</td><td>Incident reporting timelines and log-retention requirements</td></tr>
+        <tr><td class="w-name">EBA Guidelines on Outsourcing / DORA</td><td>EU-facing entities</td><td>Register of information on ICT third-party arrangements; critical-function identification; exit and impact tolerance</td></tr>
+        <tr><td class="w-name">Interagency Guidance on Third-Party Relationships (US, 2023)</td><td>US-facing entities</td><td>Lifecycle-based expectations; risk-proportionate diligence</td></tr>
+        <tr><td class="w-name">Model risk management expectations (SR 11-7 pattern)</td><td>The AI</td><td>Model inventory, independent validation, ongoing monitoring, documented limitations</td></tr>
+        <tr><td class="w-name">EU AI Act, where in scope</td><td>The AI</td><td>Classification, registration, transparency and human-oversight obligations; classify early</td></tr>
+        <tr><td class="w-name">ISO/IEC 42001 &amp; NIST AI RMF</td><td>The AI</td><td>Voluntary, but the cleanest way to evidence a managed AI system to supervisors and auditors</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">The recursive point people miss</span>
+    <p>If this platform runs on cloud infrastructure and uses third-party model services, <strong>the QA system is itself an outsourcing arrangement</strong> and must be assessed under your own framework — quite possibly as a material one, since it supports the outsourcing control function. Run it through your own process, including exit strategy, concentration analysis and audit rights over the provider. Failing to do so is a finding that writes itself, and it is exactly the kind of thing a supervisor enjoys discovering.</p>
+  </div>
+
+  <h3>Human review controls</h3>
+  <ol>
+    <li><strong>Machine output is an observation; only a human creates a finding.</strong> The data model must enforce this — observations and findings are separate entities with separate lifecycles, and no automated path converts one into the other.</li>
+    <li><strong>Named accountability.</strong> Every disposition carries a named reviewer. "The system decided" is never an acceptable answer to a supervisor or a business unit.</li>
+    <li><strong>Four-eyes on consequential outcomes:</strong> tier changes, critical-vendor findings, escalations to committee, and any first-of-kind observation type.</li>
+    <li><strong>Mandatory human review</strong> for every Tier 1 vendor assessment, every policy-breach observation, every early-warning critical alert, and every case where model confidence is below threshold.</li>
+    <li><strong>Blind sampling as a control on the model:</strong> 5% of auto-accepted assessments re-reviewed by humans who cannot see the machine score. Escape rate reported monthly to ORMC.</li>
+    <li><strong>Override rights are unconditional.</strong> Any reviewer may reject any observation with a reason code, without approval. A system reviewers cannot overrule is a system they will learn to route around.</li>
+    <li><strong>Appeal path for business units.</strong> A vendor owner who disputes an observation gets independent human re-review within a defined SLA. Without this, the programme accumulates political resistance faster than it accumulates coverage.</li>
+    <li><strong>Automation-bias monitoring.</strong> Track per-reviewer acceptance rates and time-per-disposition. A reviewer accepting 99% of observations at eight seconds each is not reviewing, and that is a control failure to manage rather than a productivity result to celebrate.</li>
+  </ol>
+
+  <h3>Audit trail — the reproducibility standard</h3>
+  <p>Every observation must be reconstructable years later. The immutable record captures:</p>
+  <div class="formula">
+assessment_id · question_id · verbatim_input_hash
+model_id · model_version · deployment_region
+prompt_template_id · prompt_version
+retrieval_snapshot_id · clause_ids_returned · corpus_effective_date
+rules_library_version · scoring_weights_version · thresholds_version
+raw_model_output · parsed_criteria · confidence
+observation_id · severity · citation_spans
+reviewer_id · disposition · reason_code · timestamp · elapsed
+subsequent_appeal · outcome
+  </div>
+  <p>Held in WORM storage with a retention period set by your records schedule — commonly 7–10 years for outsourcing records, and it should outlive the vendor relationship plus the limitation period. <strong>The test to run in year one:</strong> pick a closed observation from six months ago and reproduce its exact inputs, retrieved clauses and output. If you cannot, the audit trail is decorative, and you will discover this during an inspection rather than during a rehearsal.</p>
+
+  <h3>Model governance and ongoing monitoring</h3>
+  <div class="dl">
+    <div><dt>Pre-deployment</dt><dd>Golden-dataset validation, documented precision/recall per check, independent MRM review, documented known limitations and failure modes, ORMC approval of thresholds.</dd></div>
+    <div><dt>Change control</dt><dd>Prompt, model version, rule and weight changes are all controlled changes. Regression against the golden dataset before release. No silent model upgrades — pin versions and test provider updates explicitly.</dd></div>
+    <div><dt>Drift monitoring</dt><dd>Weekly precision, flag rate, score distribution and override rate by segment. Alarm on statistically significant shifts, and treat an unexplained flag-rate change as an incident.</dd></div>
+    <div><dt>Fairness testing</dt><dd>Flag rates compared across vendor size, geography, language and business unit. A model systematically penalising small or non-English-speaking vendors for prose quality rather than control quality is a real and likely failure mode here — test for it deliberately, quarterly.</dd></div>
+    <div><dt>Annual revalidation</dt><dd>Full independent revalidation, weight back-testing against realised incidents and findings, and a documented challenger comparison.</dd></div>
+    <div><dt>Kill switch</dt><dd>A tested, documented procedure to revert to L0 shadow or full manual QA, with defined trigger conditions and a named decision-maker. Rehearse it once a year.</dd></div>
+  </div>
+
+  <h3>Data protection</h3>
+  <ul>
+    <li>Vendor assessments contain limited personal data — contacts, signatories, occasionally individual audit findings. Minimise at ingest; do not send personal data to the model where a token or role reference will do.</li>
+    <li>Enforce data residency for model inference in line with your regulatory obligations; document the location of every processing step, including the retrieval index.</li>
+    <li>Contractually exclude your data from provider model training, and evidence that exclusion in the platform's own vendor assessment.</li>
+    <li>Apply Purview sensitivity labels at ingest and let them flow through to Power BI exports, which is where confidential vendor data most often escapes.</li>
+  </ul>
+</section>
+
+<!-- ============ 09 RISKS ============ -->
+<section id="risks">
+  <div class="sec-head">
+    <span class="sec-num">09 — Candour</span>
+    <h2>Where this fails, and what to do about it</h2>
+  </div>
+
+  <p class="lede">Programmes of this shape fail in recognisable ways. None of these are reasons not to proceed; all of them are reasons to sequence as set out above.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <caption>Programme risks</caption>
+      <thead>
+        <tr><th class="w-name">Failure mode</th><th>Early symptom</th><th>Mitigation already in this design</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="w-name">Vendor master is worse than assumed</td><td>Entity resolution finds 30%+ duplication</td><td>Day 1–30 profiling before any build commitment; publish the number honestly</td></tr>
+        <tr><td class="w-name">The standard was never written down</td><td>Two senior reviewers disagree on 30% of the baseline</td><td>Measure inter-reviewer agreement first; write rules for the disagreements before modelling</td></tr>
+        <tr><td class="w-name">Flag rate too high; reviewers drown</td><td>&gt;20% flag rate in shadow mode</td><td>Precision gates per rule; retire rules below 70%; form standardisation in Wave 1</td></tr>
+        <tr><td class="w-name">Reviewers rubber-stamp</td><td>Acceptance &gt;95% with falling time per disposition</td><td>Automation-bias monitoring as a named control; blind sampling; bulk-action caps</td></tr>
+        <tr><td class="w-name">Business units resist</td><td>Disputes escalate politically rather than through the appeal path</td><td>Formal appeal SLA; in-flight guidance so the AI helps before it judges; publish precision openly</td></tr>
+        <tr><td class="w-name">MRM approval arrives after build</td><td>Validation requests land in month 5</td><td>Governance intake starts in week 1, in parallel with data profiling</td></tr>
+        <tr><td class="w-name">Cost scales worse than volume</td><td>Cost per assessment flat as volume grows</td><td>Deterministic-first routing; batch on provisioned throughput; cost-per-assessment as a monthly KPI</td></tr>
+        <tr><td class="w-name">Alert fatigue in early warning</td><td>Open alert queue passes ~200</td><td>Two-of-eight firing rule; threshold set to team capacity; one full quarter in shadow</td></tr>
+        <tr><td class="w-name">Model quality decays silently</td><td>Override rate drifts up over two quarters</td><td>Weekly drift monitoring; pinned versions; golden-dataset regression on every change</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="tag">If you do only one thing first</span>
+    <p>Build the golden dataset. Four hundred assessments, two independent senior reviewers, every defect recorded and every disagreement resolved into a written rule. It costs a few reviewer-weeks, it requires no technology decision, no procurement and no committee approval — and without it you have no way to tell whether any of the rest of this works. Every subsequent decision in this document, from rule retirement to autonomy promotion to MRM validation, resolves against that dataset.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <p><strong>Status:</strong> design blueprint for review. Volumes, FTE figures, heat-map values and scoring weights throughout are illustrative planning assumptions, clearly marked as such, and must be replaced with measured values from your estate before use in any committee or supervisory submission.</p>
+  <p>Regulatory references are a starting frame for discussion with Legal and Compliance, not legal advice; confirm current applicability and text of each instrument before relying on it.</p>
+</footer>
+
+</main>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {};
+  links.forEach(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) map[el.id] = a;
+  });
+  var sections = Object.keys(map).map(function(id){ return document.getElementById(id); });
+  if (!('IntersectionObserver' in window) || !sections.length) return;
+
+  var visible = new Set();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id);
+    });
+    var current = sections.filter(function(s){ return visible.has(s.id); })[0];
+    links.forEach(function(a){ a.removeAttribute('aria-current'); });
+    if (current && map[current.id]) map[current.id].setAttribute('aria-current','true');
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(function(s){ io.observe(s); });
+})();
+</script>
