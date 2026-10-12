@@ -30,3 +30,10 @@ scoring weights are illustrative planning assumptions, marked as such in the
 document, and must be replaced with measured values from the estate before use in
 any committee or supervisory submission. Regulatory references are a starting
 frame for discussion with Legal and Compliance, not legal advice.
+
+---
+
+## ModernizeAI
+
+[`modernizeai/`](modernizeai/README.md) contains **ModernizeAI**, an AI-assisted Java / Spring Boot migration
+analyzer (Spring Boot backend + React frontend). See its [README](modernizeai/README.md) for setup and usage.
