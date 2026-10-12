@@ -1,0 +1,24 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Backend
+backend/target/
+backend/src/main/resources/static/
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# The repository root ignores lockfiles; this project needs its own for reproducible installs and `npm ci`.
+!frontend/package-lock.json

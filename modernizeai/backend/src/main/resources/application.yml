@@ -1,0 +1,67 @@
+server:
+  port: ${PORT:8080}
+  # Do not echo exception details to clients; GlobalExceptionHandler produces safe messages.
+  error:
+    include-message: never
+    include-stacktrace: never
+
+spring:
+  application:
+    name: modernizeai
+  servlet:
+    multipart:
+      # Keep slightly above modernizeai.upload.max-zip-bytes so our own, clearer error is shown first.
+      max-file-size: 21MB
+      max-request-size: 21MB
+  mvc:
+    problemdetails:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ModernizeAI
+    version: 0.1.0
+
+modernizeai:
+  cors-allowed-origins: ${MODERNIZEAI_CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  upload:
+    max-zip-bytes: 20971520            # 20 MB
+    max-entries: 5000
+    max-total-uncompressed-bytes: 209715200   # 200 MB
+    max-file-bytes: 2097152            # 2 MB per analyzed file
+    max-compression-ratio: 100
+  analysis:
+    default-target-java-version: 17
+    max-stored-analyses: 50
+    result-ttl-minutes: 60
+  ai:
+    # Override with the ANTHROPIC_MODEL environment variable (e.g. claude-haiku-5-5 for lower cost).
+    model: claude-opus-5-5
+    timeout-seconds: 90
+    max-output-tokens: 8000
+    max-findings-per-request: 5
+    max-snippet-chars: 1500
+    server-side-fallback: true
+
+logging:
+  level:
+    root: INFO
+    com.modernizeai: INFO
+    # The HTTP client can log request headers at DEBUG; keep it quiet so the API key can never appear in logs.
+    com.anthropic: WARN
+    okhttp3: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %5p [%15.15t] %-40.40logger{39} : %m%n"
